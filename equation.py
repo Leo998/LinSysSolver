@@ -8,6 +8,8 @@ class Equation:
 
     def __init__(self, coefficients: list[Fraction]):
         self.coefficients: list[Fraction] = coefficients
+        if len(self.coefficients) < 2:
+            raise ValueError("Not enough fraction given to the costructor to be an equation")
     
     def __add__(self, other: "Equation") -> "Equation":
         if len(self.coefficients) != len(other.coefficients):

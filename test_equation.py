@@ -8,6 +8,8 @@ def test_init():
     assert e1.coefficients[0] == Fraction(1, 2)
     assert e1.coefficients[1] == Fraction(-1, -1)
     assert e1.coefficients[2] == Fraction(2.8, 1)
+    with pytest.raises(ValueError):
+        Equation([Fraction(-5, 2)])
     
 
 def test_add():
