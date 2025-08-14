@@ -102,6 +102,8 @@ class Fraction:
         >>> Fraction.from_str("7")
         Fraction(7, 1)
         """
+        numerator: int
+        denominator:int
         try:
             numerator_as_str: str
             denominator_as_str: str
@@ -111,7 +113,7 @@ class Fraction:
         except ValueError:
             numerator_float = float(fraction_as_string)
             numerator = int(numerator_float)
-            denominator: int = 1
+            denominator = 1
             while(numerator != numerator_float):
                 numerator_float *= 10
                 denominator *= 10
@@ -152,9 +154,9 @@ class Fraction:
         Fraction
             The sum of the two addends.
         """
-        other: Fraction = Fraction(other)
-        num = self.num * other.den + other.num * self.den
-        den = self.den * other.den
+        other_as_fraction: Fraction = Fraction(other)
+        num = self.num * other_as_fraction.den + other_as_fraction.num * self.den
+        den = self.den * other_as_fraction.den
         return Fraction(num, den)
 
     def __sub__(self, other: Union["Fraction", int, float]) -> "Fraction":
@@ -191,9 +193,9 @@ class Fraction:
         Fraction
             The difference of the int or float and the fraction.
         """
-        other: Fraction = Fraction(other)
-        num = other.num * self.den - self.num * other.den
-        den = self.den * other.den
+        other_as_fraction: Fraction = Fraction(other)
+        num = other_as_fraction.num * self.den - self.num * other_as_fraction.den
+        den = self.den * other_as_fraction.den
         return Fraction(num, den)
 
     def __mul__(self, other: Union["Fraction", int, float]) -> "Fraction":
@@ -230,9 +232,9 @@ class Fraction:
             Fraction
                 The product of the two terms.
             """
-            other: Fraction = Fraction(other)
-            num = self.num * other.num
-            den = self.den * other.den
+            other_as_fraction: Fraction = Fraction(other)
+            num = self.num * other_as_fraction.num
+            den = self.den * other_as_fraction.den
             return Fraction(num, den)
 
     def __truediv__(self, other: Union["Fraction", int, float]) -> "Fraction":
@@ -281,14 +283,14 @@ class Fraction:
         ZeroDivisionError
             If the numerator of the fraction is zero.
         """
-        other: Fraction = Fraction(other)
+        other_as_fraction: Fraction = Fraction(other)
         if self.num == 0:
             raise ZeroDivisionError("Error raised by division operator")
-        num: int = self.den * other.num
-        den: int = self.num * other.den
+        num: int = self.den * other_as_fraction.num
+        den: int = self.num * other_as_fraction.den
         return Fraction(num, den)
 
-    def __eq__(self, other: Union["Fraction", int, float]) -> bool:
+    def __eq__(self, other: object | int | float) -> bool:
         """
         Check equality between two fractions or a fraction and an integer or a float.
 
@@ -316,7 +318,7 @@ class Fraction:
             return self.num * other_as_fraction.den == self.den * other_as_fraction.num
         raise TypeError("Comparasion between Fraction and invalid type")
 
-    def __ne__(self, other: Union["Fraction", int, float]) -> bool:
+    def __ne__(self, other: object | int | float) -> bool:
         """
         Check inequality between two fractions or a fraction and an integer or a float.
 
