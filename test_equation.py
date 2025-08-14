@@ -35,12 +35,17 @@ def test_mul():
     f1 = Fraction(1 , 2)
     e3 = Equation([Fraction(1, 4), Fraction(0.5), Fraction(7, 5)])
     assert e1 * f1 == e3
+    assert e1 * 0.5 == e3
+    assert e1 * 1 == e1
+    assert 2.5 * e3 == Equation([Fraction(5, 8), Fraction(5, 4), Fraction(7, 2)])
 
 def test_truediv():
     e1 = Equation([Fraction(2, 4), Fraction(1), Fraction(2.8)])
     f1 = Fraction(1 , 2)
     e3 = Equation([Fraction(1), Fraction(2), Fraction(28, 5)])
     assert e1 / f1 == e3
+    assert e1 / 3 == Equation([Fraction(1, 6), Fraction(1, 3), Fraction(14, 15)])
+    assert e3 / 1.5 == Equation([Fraction(2, 3), Fraction(4, 3), Fraction(56, 15)])
 
 def test_eq_ne():
     e1 = Equation([Fraction(2, 4), Fraction(1), Fraction(2.8)])
@@ -51,6 +56,12 @@ def test_eq_ne():
     assert e1 != e2
     with pytest.raises(ValueError):
         e1 == e4
+
+def test_is_zero():
+    e1 = Equation([Fraction(2, 4), Fraction(1), Fraction(2.8)])
+    e2 = e1 * 0
+    assert not e1.is_zero()
+    assert e2.is_zero()
 
 def test_str():
     e1 = Equation([Fraction(1, 2), Fraction(5, 5), Fraction(5.4, -2)])

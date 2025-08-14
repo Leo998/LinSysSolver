@@ -27,13 +27,25 @@ class Equation:
             new_coefficients.append(coefficient1 - coefficient2)
         return Equation(new_coefficients)
     
-    def __mul__(self, other: "Fraction") -> "Equation":
+    def __mul__(self, other: Fraction | int | float) -> "Equation":
+        if isinstance(other, int)  or isinstance(other, float):
+            other: Fraction = Fraction(other)
         new_coefficients: list[Fraction] = []
         for coefficient in self.coefficients:
             new_coefficients.append(coefficient * other)
         return Equation(new_coefficients)
     
-    def __truediv__(self, other: "Fraction") -> "Equation":
+    def __rmul__(self, other: Fraction | int | float) -> "Equation":
+        if isinstance(other, int)  or isinstance(other, float):
+            other: Fraction = Fraction(other)
+        new_coefficients: list[Fraction] = []
+        for coefficient in self.coefficients:
+            new_coefficients.append(coefficient * other)
+        return Equation(new_coefficients)
+    
+    def __truediv__(self, other: Fraction | int | float) -> "Equation":
+        if isinstance(other, int)  or isinstance(other, float):
+            other: Fraction = Fraction(other)
         new_coefficients: list[Fraction] = []
         for coefficient in self.coefficients:
             new_coefficients.append(coefficient / other)
@@ -87,3 +99,11 @@ class Equation:
             output.append(f"{sign} {self.coefficients[-1]} = 0")
         output[0] = output[0].lstrip()
         return "".join(output)
+    
+    def is_zero(self) -> bool:
+        return all(map(lambda x: x == 0, self.coefficients))
+
+
+# if __name__ == "__main__":
+#     e1 = Equation([Fraction(0, 1), Fraction(0, 4), Fraction(0)])
+#     print(e1.is_zero())
