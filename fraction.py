@@ -132,7 +132,7 @@ class Fraction:
         Fraction
             The sum of the two fractions.
         """
-        if isinstance(other, int | float):
+        if isinstance(other, int)  or isinstance(other, float):
             other = Fraction(other)
         num = self.num * other.den + other.num * self.den
         den = self.den * other.den
@@ -171,7 +171,7 @@ class Fraction:
         Fraction
             The difference of the two fractions.
         """
-        if isinstance(other, int | float):
+        if isinstance(other, int)  or isinstance(other, float):
             other = Fraction(other)
         num = self.num * other.den - other.num * self.den
         den = self.den * other.den
@@ -210,7 +210,7 @@ class Fraction:
         Fraction
             The product of the two fractions.
         """
-        if isinstance(other, int | float):
+        if isinstance(other, int)  or isinstance(other, float):
             other = Fraction(other)
         num = self.num * other.num
         den = self.den * other.den
@@ -254,7 +254,7 @@ class Fraction:
         ZeroDivisionError
             If the numerator of other is zero.
         """
-        if isinstance(other, int | float):
+        if isinstance(other, int)  or isinstance(other, float):
             other = Fraction(other)
         if other.num == 0:
             raise ZeroDivisionError("Error raised by division operator")
