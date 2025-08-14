@@ -58,6 +58,7 @@ def test_string_init():
     Then it should:
     - Parse integer strings into numerator/1.
     - Parse "a/b" strings into numerator and denominator.
+    - Parse float strings into correct exact fractions.
     - Raise ValueError if the string format is invalid (e.g. contains floats).
     """
     f1 = Fraction("3")
@@ -65,6 +66,9 @@ def test_string_init():
 
     f2 = Fraction("19/6")
     assert f2.num == 19 and f2.den == 6
+
+    f3 = Fraction("19.6")
+    assert f3.num == 98 and f3.den == 5
 
     with pytest.raises(ValueError):
         _ = Fraction("19.2/6")
@@ -88,46 +92,58 @@ def test_simplify():
 
 def test_add():
     """
-    Given two Fractions,
+    Given two Fractions, or a Fraction and an int or float,
     When they are added,
     Then the result should be their correct sum as a simplified Fraction.
     """
     f1 = Fraction(5, 4)
     f2 = Fraction(3, -2)
     assert f1 + f2 == Fraction(-1, 4)
+    assert f1 + 1 == Fraction (9, 4)
+    assert f2 + 1.5 == Fraction()
+    assert 1.5 + f2 == Fraction()
 
 
 def test_sub():
     """
-    Given two Fractions,
+    Given two Fractions, or a Fraction and an int or float,
     When one is subtracted from the other,
     Then the result should be their correct difference as a simplified Fraction.
     """
     f1 = Fraction(5, 4)
     f2 = Fraction(3, -2)
     assert f1 - f2 == Fraction(11, 4)
+    assert f1 - 1 == Fraction(1, 4)
+    assert f2 - 1.5 == Fraction(-3, 1)
+    assert 2.5 - f2 == 4
 
 
 def test_mul():
     """
-    Given two Fractions,
+    Given two Fractions, or a Fraction and an int or float,
     When they are multiplied,
     Then the result should be their correct product as a simplified Fraction.
     """
     f1 = Fraction(5, 4)
     f2 = Fraction(3, -2)
     assert f1 * f2 == Fraction(-15, 8)
+    assert f1 * 2 == Fraction(5, 2)
+    assert f2 * 0.5 == Fraction(-3, 4)
+    assert 1.5 * f1 == Fraction(15, 8)
 
 
 def test_truediv():
     """
-    Given two Fractions,
+    Given two Fractions, or a Fraction and an int or float,
     When one is divided by the other,
     Then the result should be their correct quotient as a simplified Fraction.
     """
     f1 = Fraction(5, 4)
     f2 = Fraction(3, -2)
     assert Fraction(-10, 12) == f1 / f2
+    assert Fraction(5, 8) == f1 / 2
+    assert Fraction(5, 6) == f1 / 1.5
+    assert Fraction(-5, 3) == 2.5 / f2
     assert f1 / f2 == Fraction(-10, 12)
 
 
@@ -141,10 +157,12 @@ def test_divisionByZero():
     f2 = Fraction(0)
     with pytest.raises(ZeroDivisionError):
         f1 / f2
+    with pytest.raises(ZeroDivisionError):
+        3.2 / f2
 
 def test_eq_ne():
     """
-    Given Fractions and integers,
+    Given Fractions and integers or floats,
     When equality and inequality comparisons are made,
     Then they should:
     - Return True for equal values.
@@ -153,17 +171,19 @@ def test_eq_ne():
     """
     assert Fraction(2, 4) == Fraction (4, 8)
     assert Fraction(2, 4) != Fraction (4, 7)
+    assert Fraction(2, 4) == 0.5
     assert Fraction(8, 2) == 4
     assert Fraction(4, 2) != 1
+    assert 2.5 == Fraction(5, 2)
     with pytest.raises(TypeError):
-        Fraction(2, 4) == 0.5
+        Fraction(2, 4) == "0.5"
 
 def test_str():
     """
     Given a Fraction,
     When __str__() is called,
     Then it should:
-    - Return 'numerator/denominator' when denominator is not 1.
+    - Return numerator/denominator when denominator is not 1.
     - Return only the numerator when denominator is 1.
     - Properly display negative values.
     """
