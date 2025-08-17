@@ -50,8 +50,8 @@ class Equation:
         4/1 x1 - 6/1 x2 + 10/1 = 0
     """
 
-    def __init__(self, coefficients: list[Fraction]):
-        self.coefficients: list[Fraction] = coefficients
+    def __init__(self, *coefficients: list[Fraction]):
+        self.coefficients: list[Fraction] = [coefficient for coefficient in coefficients]
         if len(self.coefficients) < 2:
             raise ValueError("Not enough fraction given to the costructor to be an equation")
     
@@ -61,7 +61,7 @@ class Equation:
         new_coefficients: list[Fraction] = []
         for coefficient1, coefficient2 in zip(self.coefficients, other.coefficients):
             new_coefficients.append(coefficient1 + coefficient2)
-        return Equation(new_coefficients)
+        return Equation(*new_coefficients)
     
     def __sub__(self, other: "Equation") -> "Equation":
         if len(self.coefficients) != len(other.coefficients):
@@ -69,7 +69,7 @@ class Equation:
         new_coefficients: list[Fraction] = []
         for coefficient1, coefficient2 in zip(self.coefficients, other.coefficients):
             new_coefficients.append(coefficient1 - coefficient2)
-        return Equation(new_coefficients)
+        return Equation(*new_coefficients)
     
     def __mul__(self, other: Fraction | int | float) -> "Equation":
         other_as_fraction: Fraction
@@ -80,7 +80,7 @@ class Equation:
         new_coefficients: list[Fraction] = []
         for coefficient in self.coefficients:
             new_coefficients.append(coefficient * other_as_fraction)
-        return Equation(new_coefficients)
+        return Equation(*new_coefficients)
     
     def __rmul__(self, other: Fraction | int | float) -> "Equation":
         other_as_fraction: Fraction
@@ -91,7 +91,7 @@ class Equation:
         new_coefficients: list[Fraction] = []
         for coefficient in self.coefficients:
             new_coefficients.append(coefficient * other_as_fraction)
-        return Equation(new_coefficients)
+        return Equation(*new_coefficients)
     
     def __truediv__(self, other: Fraction | int | float) -> "Equation":
         other_as_fraction: Fraction
@@ -102,7 +102,7 @@ class Equation:
         new_coefficients: list[Fraction] = []
         for coefficient in self.coefficients:
             new_coefficients.append(coefficient / other_as_fraction)
-        return Equation(new_coefficients)
+        return Equation(*new_coefficients)
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Equation):
