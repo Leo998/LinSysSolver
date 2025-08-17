@@ -211,9 +211,11 @@ class Fraction:
         -------
         Fraction
             The product of the two fractions.
-        """
+        """            
         if isinstance(other, int)  or isinstance(other, float):
             other = Fraction(other)
+        if not isinstance(other, Fraction):
+            return NotImplemented
         num = self.num * other.num
         den = self.den * other.den
         return Fraction(num, den)
