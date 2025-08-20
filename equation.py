@@ -31,22 +31,22 @@ class Equation:
     Create an equation with two variables::
 
         >>> from fraction import Fraction
-        >>> eq1 = Equation([Fraction(2), Fraction(-3), Fraction(5)])
+        >>> eq1 = Equation(Fraction(2), Fraction(-3), Fraction(5))
         >>> print(eq1)
-        2/1 x1 - 3/1 x2 + 5/1 = 0
+        2 x1 - 3 x2 + 5 = 0
 
     Add two equations::
 
-        >>> eq2 = Equation([Fraction(1), Fraction(4), Fraction(-2)])
+        >>> eq2 = Equation(Fraction(1), Fraction(4), Fraction(-2))
         >>> eq_sum = eq1 + eq2
         >>> print(eq_sum)
-        3/1 x1 + 1/1 x2 + 3/1 = 0
+        3 x1 + 1 x2 + 3 = 0
 
     Multiply by a scalar::
 
         >>> eq_scaled = eq1 * 2
         >>> print(eq_scaled)
-        4/1 x1 - 6/1 x2 + 10/1 = 0
+        4 x1 - 6 x2 + 10 = 0
     """
 
     def __init__(self, *coefficients: Fraction):
