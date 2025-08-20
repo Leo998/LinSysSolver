@@ -38,6 +38,39 @@ class Fraction:
     """
 
     def __init__(self, numerator: int | float | str = 0, denominator: int = 1):
+        """
+        Initialize a Fraction instance.
+
+        Parameters
+        ----------
+        numerator : int, float, or str, optional
+            The numerator of the fraction (Defaults to 0).
+            Can be:
+            - int: integer numerator.
+            - float: will be converted into an exact fraction.
+            - str: either an integer string (e.g. "5") or a string in the form "a/b".
+        denominator : int or float, optional
+            The denominator of the fraction (Defaults to 1).
+            Cannot be zero.
+
+        Raises
+        ------
+        ZeroDivisionError
+            If denominator is 0.
+        TypeError
+            If the input types cannot be converted into a valid Fraction.
+
+        Examples
+        --------
+        >>> Fraction(3, 4)
+        Fraction(3, 4)
+        >>> Fraction(2.5)
+        Fraction(5, 2)
+        >>> Fraction("7/3")
+        Fraction(7, 3)
+        >>> Fraction("8")
+        Fraction(8, 1)
+        """
         if denominator == 0:
             raise ZeroDivisionError("Error raised by Fraction class' constructor")
         if isinstance(numerator, str):
@@ -64,7 +97,7 @@ class Fraction:
         greatest_common_divisor = math.gcd(self.num, self.den)
         self.num //= greatest_common_divisor
         self.den //= greatest_common_divisor
-        if self.den < 0:  
+        if self.den < 0:
             self.num *= -1
             self.den *= -1
 
@@ -103,7 +136,7 @@ class Fraction:
         Fraction(7, 1)
         """
         numerator: int
-        denominator:int
+        denominator: int
         try:
             numerator_as_str: str
             denominator_as_str: str
@@ -114,7 +147,7 @@ class Fraction:
             numerator_float = float(fraction_as_string)
             numerator = int(numerator_float)
             denominator = 1
-            while(numerator != numerator_float):
+            while numerator != numerator_float:
                 numerator_float *= 10
                 denominator *= 10
                 numerator = int(numerator_float)
@@ -134,12 +167,12 @@ class Fraction:
         Fraction
             The sum of the two fractions.
         """
-        if isinstance(other, int)  or isinstance(other, float):
+        if isinstance(other, int) or isinstance(other, float):
             other = Fraction(other)
         num = self.num * other.den + other.num * self.den
         den = self.den * other.den
         return Fraction(num, den)
-    
+
     def __radd__(self, other: int | float) -> "Fraction":
         """
         Add a fraction to an integer or float.
@@ -173,12 +206,12 @@ class Fraction:
         Fraction
             The difference of the two fractions.
         """
-        if isinstance(other, int)  or isinstance(other, float):
+        if isinstance(other, int) or isinstance(other, float):
             other = Fraction(other)
         num = self.num * other.den - other.num * self.den
         den = self.den * other.den
         return Fraction(num, den)
-    
+
     def __rsub__(self, other: int | float) -> "Fraction":
         """
         Subtract one fraction from an int or float.
@@ -211,8 +244,8 @@ class Fraction:
         -------
         Fraction
             The product of the two fractions.
-        """            
-        if isinstance(other, int)  or isinstance(other, float):
+        """
+        if isinstance(other, int) or isinstance(other, float):
             other = Fraction(other)
         if not isinstance(other, Fraction):
             return NotImplemented
@@ -221,23 +254,23 @@ class Fraction:
         return Fraction(num, den)
 
     def __rmul__(self, other: int | float) -> "Fraction":
-            """
-            Multiply a fraction and an integer or float.
+        """
+        Multiply a fraction and an integer or float.
 
-            Parameters
-            ----------
-            other : int, float
-                The int or float to multiply with.
+        Parameters
+        ----------
+        other : int, float
+            The int or float to multiply with.
 
-            Returns
-            -------
-            Fraction
-                The product of the two terms.
-            """
-            other_as_fraction: Fraction = Fraction(other)
-            num = self.num * other_as_fraction.num
-            den = self.den * other_as_fraction.den
-            return Fraction(num, den)
+        Returns
+        -------
+        Fraction
+            The product of the two terms.
+        """
+        other_as_fraction: Fraction = Fraction(other)
+        num = self.num * other_as_fraction.num
+        den = self.den * other_as_fraction.den
+        return Fraction(num, den)
 
     def __truediv__(self, other: Union["Fraction", int, float]) -> "Fraction":
         """
@@ -258,14 +291,14 @@ class Fraction:
         ZeroDivisionError
             If the numerator of other is zero.
         """
-        if isinstance(other, int)  or isinstance(other, float):
+        if isinstance(other, int) or isinstance(other, float):
             other = Fraction(other)
         if other.num == 0:
             raise ZeroDivisionError("Error raised by division operator")
         num: int = self.num * other.den
         den: int = self.den * other.num
         return Fraction(num, den)
-    
+
     def __rtruediv__(self, other: int | float) -> "Fraction":
         """
         Divide one int or float by a fraction.
@@ -343,10 +376,10 @@ class Fraction:
         Returns
         -------
         str
-            String in the form "numerator/denominator" or, if the 
+            String in the form "numerator/denominator" or, if the
             denominator is 1, in the form on an int (by only displaying
             the numerator)
-        
+
         Examples
         --------
         >>> x = Fraction("-2.8")
@@ -365,7 +398,7 @@ class Fraction:
         -------
         str
             String in the form "Fraction(numerator, denominator)".
-        
+
         Examples
         --------
         >>> x = Fraction("-2.8")
@@ -373,4 +406,3 @@ class Fraction:
         Fraction(-14, 5)
         """
         return f"Fraction({self.num}, {self.den})"
-
