@@ -204,3 +204,6 @@ __marimo__/
 
 # ZoneIdentifier
 *:Zone.Identifier
+
+# VisualStudioSettings
+.vscode/
