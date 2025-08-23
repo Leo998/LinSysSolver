@@ -37,7 +37,7 @@ class Fraction:
     Fraction(19, 6)
     """
 
-    def __init__(self, numerator: int | float | str = 0, denominator: int = 1):
+    def __init__(self, numerator: int | float | str = 0, denominator: int | float = 1):
         """
         Initialize a Fraction instance.
 
@@ -325,6 +325,25 @@ class Fraction:
         den: int = self.num * other_as_fraction.den
         return Fraction(num, den)
 
+    def __abs__(self) -> "Fraction":
+        """
+        Return the absolute value of the fraction.
+
+        Returns
+        -------
+        Fraction
+            A new Fraction instance with a non-negative numerator
+            and the same denominator.
+
+        Examples
+        --------
+        >>> abs(Fraction(-3, 4))
+        Fraction(3, 4)
+        >>> abs(Fraction(5, -2))
+        Fraction(5, 2)
+        """
+        return Fraction(abs(self.num), self.den)
+
     def __eq__(self, other: object | int | float) -> bool:
         """
         Check equality between two fractions or a fraction and an integer or a float.
@@ -369,6 +388,80 @@ class Fraction:
         """
         return not self.__eq__(other)
 
+    def __lt__(self, other: object | int | float) -> bool:
+        """
+        Check if this fraction is less than another value.
+
+        Parameters
+        ----------
+        other : Fraction, int, or float
+            The value to compare with.
+
+        Returns
+        -------
+        bool
+            True if this fraction is less than `other`, False otherwise.
+
+        Raises
+        ------
+        AttributeError
+            If `other` is not a Fraction, int, or float.
+
+        Examples
+        --------
+        >>> Fraction(1, 2) < Fraction(3, 4)
+        True
+        >>> Fraction(1, 2) < 1
+        True
+        >>> Fraction(3, 2) < 1.5
+        False
+        """
+        other_as_fraction: Fraction 
+        if isinstance(other, int) or isinstance(other, float):
+            other_as_fraction = Fraction(other)
+        elif isinstance(other, Fraction):
+            other_as_fraction = other
+        else:
+            raise(AttributeError)
+        return (self.num * other_as_fraction.den) < (other_as_fraction.num * self.den)
+
+    def __gt__(self, other: object | int | float) -> bool:
+        """
+        Check if this fraction is greater than another value.
+
+        Parameters
+        ----------
+        other : Fraction, int, or float
+            The value to compare with.
+
+        Returns
+        -------
+        bool
+            True if this fraction is greater than `other`, False otherwise.
+
+        Raises
+        ------
+        AttributeError
+            If `other` is not a Fraction, int, or float.
+
+        Examples
+        --------
+        >>> Fraction(3, 4) > Fraction(1, 2)
+        True
+        >>> Fraction(2, 1) > 1
+        True
+        >>> Fraction(1, 2) > 1.5
+        False
+        """
+        other_as_fraction: Fraction 
+        if isinstance(other, int) or isinstance(other, float):
+            other_as_fraction = Fraction(other)
+        elif isinstance(other, Fraction):
+            other_as_fraction = other
+        else:
+            raise(AttributeError)
+        return (self.num * other_as_fraction.den) > (other_as_fraction.num * self.den)
+
     def __str__(self):
         """
         Return a human-readable string representation of the fraction.
@@ -402,7 +495,7 @@ class Fraction:
         Examples
         --------
         >>> x = Fraction("-2.8")
-        >>> print(x)
+        >>> x
         Fraction(-14, 5)
         """
         return f"Fraction({self.num}, {self.den})"

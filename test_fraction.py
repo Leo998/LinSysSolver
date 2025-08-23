@@ -159,6 +159,22 @@ def test_divisionByZero():
         f1 / f2
     with pytest.raises(ZeroDivisionError):
         3.2 / f2
+    
+def test_abs():
+    """
+    Given a Fraction,
+    When abs() is called,
+    Then it should:
+    - Return a new Fraction with a non-negative numerator.
+    - Preserve the denominator.
+    - Be mathematically equal to the absolute value of the fraction.
+    """
+    f1 = Fraction(-2, -4)
+    f2 = Fraction(-1, 3)
+    f3 = f1 * f2
+    assert abs(f1) == 0.5
+    assert abs(f2) == Fraction(1, 3)
+    assert abs(f3) == Fraction(1, 6)
 
 def test_eq_ne():
     """
@@ -177,6 +193,40 @@ def test_eq_ne():
     assert 2.5 == Fraction(5, 2)
     with pytest.raises(TypeError):
         Fraction(2, 4) == "0.5"
+
+def test_lt():
+    """
+    Given two Fractions or a Fraction compared with a numeric type,
+    When the less-than operator (<) is used,
+    Then it should:
+    - Return True if the first value is mathematically smaller.
+    - Support comparison with int and float values.
+    - Raise an AttributeError if the type is unsupported.
+    """
+    f1 = Fraction(-2, -4)
+    f2 = Fraction(-1, 3)
+    assert f2 < f1
+    assert 0 < f1
+    assert -0.6 < f2
+    with pytest.raises(AttributeError):
+        f1 < "ciao"
+
+def test_gt():
+    """
+    Given two Fractions or a Fraction compared with a numeric type,
+    When the greater-than operator (>) is used,
+    Then it should:
+    - Return True if the first value is mathematically greater.
+    - Support comparison with int and float values.
+    - Raise an AttributeError if the type is unsupported.
+    """
+    f1 = Fraction(-2, -4)
+    f2 = Fraction(-1, 3)
+    assert f1 > f2
+    assert f1 > -1
+    assert -0.1 > f2
+    with pytest.raises(AttributeError):
+        f1 > "ciao"
 
 def test_str():
     """
