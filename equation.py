@@ -203,29 +203,53 @@ class Equation:
 
     def __eq__(self, other: object) -> bool:
         """
-        Check if two equations are equal.
+        Check if two equations are equivalent.
+
+        Two equations are considered equivalent if:
+        - They have the same number of coefficients.
+        - Each corresponding coefficient is either zero in both equations
+          or is a scalar multiple of the other by the same factor.
 
         Parameters
         ----------
         other : Equation
-            The equation to compare.
+            The equation to compare with.
 
         Returns
         -------
         bool
-            True if all corresponding coefficients are equal, False otherwise.
+            True if the equations are equivalent (possibly differing only
+            by a scalar multiple of their coefficients). False otherwise.
 
         Raises
         ------
+        TypeError
+            If `other` is not an Equation instance.
         ValueError
             If the two equations have different numbers of coefficients.
+
+        Examples
+        --------
+        >>> from fraction import Fraction
+        >>> from equation import Equation
+        >>> eq1 = Equation(Fraction(2), Fraction(-4), Fraction(6))
+        >>> eq2 = Equation(Fraction(1), Fraction(-2), Fraction(3))
+        >>> eq1 == eq2
+        True
+        >>> eq1 == Equation(Fraction(2), Fraction(-3), Fraction(6))
+        False
         """
         if not isinstance(other, Equation):
             raise TypeError("Invalid type used for comparison")
         if len(self.coefficients) != len(other.coefficients):
             raise ValueError("Equation instances have different number of coefficients")
+        factor: Fraction = Fraction(1)
         for coefficient1, coefficient2 in zip(self.coefficients, other.coefficients):
-            if coefficient1 != coefficient2:
+            if coefficient1 != 0 and coefficient2 != 0:
+                factor = coefficient1 / coefficient2
+                break
+        for coefficient1, coefficient2 in zip(self.coefficients, other.coefficients):
+            if equal_or_multiple(coefficient1, coefficient2, factor):
                 return False
         return True
 
@@ -311,6 +335,51 @@ class Equation:
             True if all coefficients are zero, False otherwise.
         """
         return all(c == 0 for c in self.coefficients)
+
+
+def equal_or_multiple(c1: Fraction, c2: Fraction, factor: Fraction) -> bool:
+    """
+    Check whether two coefficients are consistent with a given scaling factor.
+
+    This helper is used to determine if two coefficients are either:
+    - Both zero, or
+    - Non-zero and equal up to the given multiplicative factor.
+
+    Parameters
+    ----------
+    c1 : Fraction
+        The first coefficient.
+    c2 : Fraction
+        The second coefficient.
+    factor : Fraction
+        The factor expected to relate c1 and c2.
+
+    Returns
+    -------
+    bool
+        False if the coefficients are consistent with the scaling factor,
+        True if they are not (i.e. one is zero and the other is not, or
+        they are not multiples of each other by the given factor).
+
+    Examples
+    --------
+    >>> from fraction import Fraction
+    >>> from equation import equal_or_multiple
+    >>> equal_or_multiple(Fraction(2), Fraction(4), Fraction(1, 2))
+    False
+    >>> equal_or_multiple(Fraction(0), Fraction(5), Fraction(1))
+    True
+    >>> equal_or_multiple(Fraction(0), Fraction(0), Fraction(1))
+    False
+    """
+    if (c1 == 0 and c2 != 0) or (c1 != 0 and c2 == 0):
+        return True
+    elif c1 == 0 and c2 == 0:
+        return False
+    elif c1 / c2 == factor:
+        return False
+    else:
+        return True
 
 
 # if __name__ == "__main__":

@@ -107,6 +107,27 @@ def test_eq_ne():
     with pytest.raises(TypeError):
         e1 == 5
 
+def test_eq_with_multiple():
+    """
+    Given two Equations,
+    When equality is checked,
+    Then it should:
+    - Return True if both are the zero equation.
+    - Return False if their coefficients cannot be made equal
+      by a common scalar factor.
+    - Return True if their coefficients are consistent with
+      the same scalar factor (i.e. one equation is a multiple of the other).
+    """
+    e01 = Equation(Fraction(0), Fraction(0), Fraction(0))
+    e02 = Equation(Fraction(0), Fraction(0), Fraction(0))
+    assert e01 == e02
+    e1 = Equation(Fraction(0), Fraction(20), Fraction(0))
+    e2 = Equation(Fraction(5.3), Fraction(0), Fraction(-6, 4))
+    assert e1 != e2
+    e3 = Equation(Fraction(0), Fraction(5.5), Fraction(-16, 2))
+    e4 = Equation(Fraction(0), Fraction(7.15), Fraction(-10.4))
+    assert e3 == e4
+
 def test_is_zero():
     """
     Given an Equation,
