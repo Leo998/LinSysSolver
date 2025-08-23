@@ -66,4 +66,22 @@ E2: - 3 x1 + 21/5 x2 + 3 x3 + 2/7 = 0
 E3: 1 x1 - 5/3 x2 + 31/5 x3 + 4 = 0
 """
 
+def test_minimize():
+    s1 = SystemEq.from_csv("csv_files/system.csv")
+    s2 = SystemEq.from_csv("csv_files/system_to_minimize1.csv")
+    s3 = SystemEq.from_csv("csv_files/system_to_minimize2.csv")
+    s1.minimize_system()
+    s2.minimize_system()
+    s3.minimize_system()
+    assert s1.__str__() == """E1: 53/10 x1 - 2 x2 + 3 x3 + 44/5 = 0
+E2: - 3 x1 + 21/5 x2 + 3 x3 + 2/7 = 0
+E3: 1 x1 - 5/3 x2 + 31/5 x3 + 4 = 0
+"""
+    assert s2.__str__() == """E1: 1 x1 + 2 x2 + 3 x3 + 4 = 0
+"""
+    assert s3.__str__() == """E1: 1 x1 + 2 x2 + 3 x3 + 4 = 0
+E2: - 7/2 x1 + 14/5 x2 + 6/5 x3 - 1 = 0
+E5: 1/2 x1 + 1 x2 + 3/2 x3 + 3 = 0
+"""
+
 

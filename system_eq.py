@@ -3,11 +3,14 @@ import csv
 from typing import NamedTuple
 from fraction import Fraction
 from equation import Equation
+from itertools import combinations
 
 
 class NumberedEquation(NamedTuple):
     equation_number: int
     equation: Equation
+    def __hash__(self):
+        return self.equation_number
 
 
 class SystemEq:
@@ -60,17 +63,22 @@ class SystemEq:
                     break
             if unused == True:
                 deleted_unkwokns.append(i)
-        for i in deleted_unkwokns[::-1]:
+        for i in deleted_unkwokns[::-1]: # Reversed so the list is not affected by the deletion
             for n_eq in self.system:
                 del n_eq.equation.coefficients[i]
         self.eq_lenght -= len(deleted_unkwokns)
+    
+    def minimize_system(self) -> None:
+        self.check_unused_unknowns()
+        eq_to_be_erased: set[NumberedEquation] = set()
+        for eq1, eq2 in combinations(self.system, 2):
+            if eq1.equation == eq2.equation:
+                eq_to_be_erased.add(eq2)
+        for eq in eq_to_be_erased:
+            self.system.remove(eq)
 
 # if __name__ == "__main__":
-#     x = SystemEq.from_csv("csv_files/unused_unknowns.csv")
-#     print(x)
-#     x.check_unused_unknowns()
-#     print(x)
-    # x._del_equation_if_zero(0)
-    # print(x)
-    # x._del_equation_if_zero(2)
-    # print(x)
+#     s3 = SystemEq.from_csv("csv_files/system_to_minimize2.csv")
+#     s3.minimize_system()
+#     print(s3)
+   
