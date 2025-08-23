@@ -1,2 +1,4 @@
-missing-cov:
-	pytest --cov-report term-missing
+test:
+	pytest --cov-report term-missing *.py
+type:
+	mypy *.py
