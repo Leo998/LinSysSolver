@@ -7,10 +7,22 @@ class Equation:
     """
     Representation of a linear equation with fractional coefficients.
 
-    This class supports arithmetic operations between equations,
-    scalar multiplication/division, comparison, and formatted string
-    representation. It ensures exact arithmetic by using `Fraction`
-    instances for coefficients.
+    This class models equations of the form:
+
+        a_1 x1 + a_2 x2 + ... + a_n xn + c = 0
+
+    where each coefficient a_i and constant term c
+    is stored as a fraction for exact arithmetic.
+
+    Equations can be:
+    - Added or subtracted term by term.
+    - Scaled by rational, integer, or floating-point factors.
+    - Compared for equivalence (up to a multiplicative factor).
+    - Printed in a human-readable algebraic format.
+
+    This class is primarily useful for symbolic manipulation of
+    systems of linear equations without introducing floating-point
+    approximation errors.
 
     Attributes
     ----------
@@ -25,10 +37,12 @@ class Equation:
         If fewer than two coefficients are provided during initialization.
         If arithmetic operations are attempted on equations with different
         numbers of coefficients.
+    TypeError
+        If an unsupported type is used in comparison.
 
     Examples
     --------
-    Create an equation with two variables::
+    Create an equation with two variables:
 
         >>> from fraction import Fraction
         >>> eq1 = Equation(Fraction(2), Fraction(-3), Fraction(5))
@@ -47,6 +61,12 @@ class Equation:
         >>> eq_scaled = eq1 * 2
         >>> print(eq_scaled)
         4 x1 - 6 x2 + 10 = 0
+
+    Compare equivalent equations (up to scalar factor):
+
+        >>> eq3 = Equation(Fraction(1), Fraction(-1.5), Fraction(2.5))
+        >>> eq1 == eq3
+        True
     """
 
     def __init__(self, *coefficients: Fraction):
@@ -190,6 +210,11 @@ class Equation:
         -------
         Equation
             A new Equation instance with scaled coefficients.
+
+        Raises
+        ------
+        ZeroDivisionError
+            If `other` evaluates to zero.
         """
         other_as_fraction: Fraction
         if isinstance(other, int) or isinstance(other, float):
@@ -228,6 +253,11 @@ class Equation:
         ValueError
             If the two equations have different numbers of coefficients.
 
+        Notes
+        -----
+        This implements the standard linear algebra definition of
+        equation equivalence up to a scalar multiple.
+
         Examples
         --------
         >>> from fraction import Fraction
@@ -244,12 +274,15 @@ class Equation:
         if len(self.coefficients) != len(other.coefficients):
             raise ValueError("Equation instances have different number of coefficients")
         factor: Fraction = Fraction(1)
+
+        # NOTE: Find the first non-zero pair to define the scaling factor
+        # and use it to check consistency across all coefficients.
         for coefficient1, coefficient2 in zip(self.coefficients, other.coefficients):
             if coefficient1 != 0 and coefficient2 != 0:
                 factor = coefficient1 / coefficient2
                 break
         for coefficient1, coefficient2 in zip(self.coefficients, other.coefficients):
-            if equal_or_multiple(coefficient1, coefficient2, factor):
+            if not_equal_or_multiple(coefficient1, coefficient2, factor):
                 return False
         return True
 
@@ -277,7 +310,7 @@ class Equation:
         -------
         str
             A string in the form:
-            "a1 x1 ± a2 x2 ± ... ± an = 0",
+            "a_1 x1 ± a_2 x2 ± ... ± a_n xn ± c = 0",
             with proper signs and spacing.
         """
         output: list[str] = []
@@ -288,6 +321,9 @@ class Equation:
                 coefficient = coefficient * Fraction(-1)
             output.append(f"{sign} {coefficient} x{subscript} ")
             sign = "+"
+        
+        # HACK: Temporarily flip the sign of the constant term to format it,
+        # then restore the original value.
         if self.coefficients[-1].num < 0:
             sign = "-"
             self.coefficients[-1] = self.coefficients[-1] * Fraction(-1)
@@ -337,13 +373,12 @@ class Equation:
         return all(c == 0 for c in self.coefficients)
 
 
-def equal_or_multiple(c1: Fraction, c2: Fraction, factor: Fraction) -> bool:
+def not_equal_or_multiple(c1: Fraction, c2: Fraction, factor: Fraction) -> bool:
     """
-    Check whether two coefficients are consistent with a given scaling factor.
+    Check whether two coefficients are consistent with a scaling factor.
 
-    This helper is used to determine if two coefficients are either:
-    - Both zero, or
-    - Non-zero and equal up to the given multiplicative factor.
+    This helper determines if two coefficients belong to equations that are
+    equivalent up to a multiplicative constant.
 
     Parameters
     ----------
@@ -357,21 +392,23 @@ def equal_or_multiple(c1: Fraction, c2: Fraction, factor: Fraction) -> bool:
     Returns
     -------
     bool
-        False if the coefficients are consistent with the scaling factor,
-        True if they are not (i.e. one is zero and the other is not, or
+        False if the coefficients are consistent (both zero or related by
+        the factor). True if they are not (i.e. one is zero and the other is not, or
         they are not multiples of each other by the given factor).
 
     Examples
     --------
     >>> from fraction import Fraction
-    >>> from equation import equal_or_multiple
-    >>> equal_or_multiple(Fraction(2), Fraction(4), Fraction(1, 2))
+    >>> from equation import not_equal_or_multiple
+    >>> not_equal_or_multiple(Fraction(2), Fraction(4), Fraction(1, 2))
     False
-    >>> equal_or_multiple(Fraction(0), Fraction(5), Fraction(1))
+    >>> not_equal_or_multiple(Fraction(0), Fraction(5), Fraction(1))
     True
-    >>> equal_or_multiple(Fraction(0), Fraction(0), Fraction(1))
+    >>> not_equal_or_multiple(Fraction(0), Fraction(0), Fraction(1))
     False
     """
+    # NOTE: This helper returns False if coefficients are consistent
+    # with the scaling factor, True otherwise (slightly inverted logic).
     if (c1 == 0 and c2 != 0) or (c1 != 0 and c2 == 0):
         return True
     elif c1 == 0 and c2 == 0:

@@ -22,6 +22,11 @@ class Fraction:
         The denominator of the fraction (Defaults to 1).
         Cannot be zero.
 
+    Notes
+    -----
+    Fractions are always stored in simplified form, using the Euclidean
+    algorithm (via math.gcd).
+
     Raises
     ------
     ZeroDivisionError
@@ -93,6 +98,11 @@ class Fraction:
 
         Ensures that the denominator is positive by moving any negative
         sign to the numerator.
+
+        Notes
+        -----
+        Simplification is achieved using the Euclidean algorithm to compute
+        the greatest common divisor (math.gcd).
         """
         greatest_common_divisor = math.gcd(self.num, self.den)
         self.num //= greatest_common_divisor
@@ -126,7 +136,9 @@ class Fraction:
 
         Notes
         -----
-        Floating-point numbers in string form "a/b" are not supported.
+        - Floating-point numbers in string form "a/b" are not supported.
+        - This method is used internally by __init__ when the
+          numerator is a string.
 
         Examples
         --------
@@ -166,6 +178,18 @@ class Fraction:
         -------
         Fraction
             The sum of the two fractions.
+
+        Notes
+        -----
+        Addition is performed by cross-multiplying denominators to obtain
+        a common denominator.
+
+        Examples
+        --------
+        >>> Fraction(1, 2) + Fraction(1, 3)
+        Fraction(5, 6)
+        >>> Fraction(3, 2) + 1
+        Fraction(5, 2)
         """
         if isinstance(other, int) or isinstance(other, float):
             other = Fraction(other)
@@ -244,6 +268,13 @@ class Fraction:
         -------
         Fraction
             The product of the two fractions.
+
+        Examples
+        --------
+        >>> Fraction(2, 3) * Fraction(3, 4)
+        Fraction(1, 2)
+        >>> Fraction(5, 2) * 2
+        Fraction(5, 1)
         """
         if isinstance(other, int) or isinstance(other, float):
             other = Fraction(other)
@@ -290,6 +321,18 @@ class Fraction:
         ------
         ZeroDivisionError
             If the numerator of other is zero.
+
+        Notes
+        -----
+        Division of fractions is equivalent to multiplying the dividend
+        by the reciprocal of the divisor.
+
+        Examples
+        --------
+        >>> Fraction(3, 4) / Fraction(2, 3)
+        Fraction(9, 8)
+        >>> Fraction(5, 2) / 2
+        Fraction(5, 4)
         """
         if isinstance(other, int) or isinstance(other, float):
             other = Fraction(other)
@@ -362,6 +405,11 @@ class Fraction:
         ------
         TypeError
             If other is an unsupported type.
+
+        Notes
+        -----
+        Equality is checked by cross-multiplication to avoid
+        floating-point approximations.
         """
         if isinstance(other, Fraction):
             return self.num * other.den == self.den * other.num
@@ -407,6 +455,11 @@ class Fraction:
         AttributeError
             If `other` is not a Fraction, int, or float.
 
+        Notes
+        -----
+        Comparison is done by cross-multiplication to avoid floating-point
+        approximations.
+
         Examples
         --------
         >>> Fraction(1, 2) < Fraction(3, 4)
@@ -416,13 +469,13 @@ class Fraction:
         >>> Fraction(3, 2) < 1.5
         False
         """
-        other_as_fraction: Fraction 
+        other_as_fraction: Fraction
         if isinstance(other, int) or isinstance(other, float):
             other_as_fraction = Fraction(other)
         elif isinstance(other, Fraction):
             other_as_fraction = other
         else:
-            raise(AttributeError)
+            raise (AttributeError)
         return (self.num * other_as_fraction.den) < (other_as_fraction.num * self.den)
 
     def __gt__(self, other: object | int | float) -> bool:
@@ -444,6 +497,11 @@ class Fraction:
         AttributeError
             If `other` is not a Fraction, int, or float.
 
+        Notes
+        -----
+        Comparison is done by cross-multiplication to avoid floating-point
+        approximations.
+
         Examples
         --------
         >>> Fraction(3, 4) > Fraction(1, 2)
@@ -453,13 +511,13 @@ class Fraction:
         >>> Fraction(1, 2) > 1.5
         False
         """
-        other_as_fraction: Fraction 
+        other_as_fraction: Fraction
         if isinstance(other, int) or isinstance(other, float):
             other_as_fraction = Fraction(other)
         elif isinstance(other, Fraction):
             other_as_fraction = other
         else:
-            raise(AttributeError)
+            raise (AttributeError)
         return (self.num * other_as_fraction.den) > (other_as_fraction.num * self.den)
 
     def __str__(self):
@@ -491,6 +549,11 @@ class Fraction:
         -------
         str
             String in the form "Fraction(numerator, denominator)".
+
+        Notes
+        -----
+        This differs from __str__: __repr__ is meant for debugging
+        and unambiguous reconstruction, while __str__ is user-friendly.
 
         Examples
         --------
