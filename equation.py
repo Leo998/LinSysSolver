@@ -398,7 +398,7 @@ def not_equal_or_multiple(c1: Fraction, c2: Fraction, factor: Fraction) -> bool:
 
     Examples
     --------
-    >>> from fraction import Fractio
+    >>> from fraction import Fraction
     >>> from equation import not_equal_or_multiple
     >>> not_equal_or_multiple(Fraction(2), Fraction(4), Fraction(1, 2))
     False
