@@ -321,7 +321,7 @@ class Equation:
                 coefficient = coefficient * Fraction(-1)
             output.append(f"{sign} {coefficient} x{subscript} ")
             sign = "+"
-        
+
         # HACK: Temporarily flip the sign of the constant term to format it,
         # then restore the original value.
         if self.coefficients[-1].num < 0:
@@ -392,13 +392,13 @@ def not_equal_or_multiple(c1: Fraction, c2: Fraction, factor: Fraction) -> bool:
     Returns
     -------
     bool
-        False if the coefficients are consistent (both zero or related by
-        the factor). True if they are not (i.e. one is zero and the other is not, or
-        they are not multiples of each other by the given factor).
+        True if the coefficients are not consistent (i.e. one is zero and the other is not, or
+        they are not multiples of each other by the given factor). False otherwise
+        (both zero or related by the factor).
 
     Examples
     --------
-    >>> from fraction import Fraction
+    >>> from fraction import Fractio
     >>> from equation import not_equal_or_multiple
     >>> not_equal_or_multiple(Fraction(2), Fraction(4), Fraction(1, 2))
     False
@@ -417,8 +417,3 @@ def not_equal_or_multiple(c1: Fraction, c2: Fraction, factor: Fraction) -> bool:
         return False
     else:
         return True
-
-
-# if __name__ == "__main__":
-#     e1 = Equation([Fraction(0, 1), Fraction(0, 4), Fraction(0)])
-#     print(e1.is_zero())
