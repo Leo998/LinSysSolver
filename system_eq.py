@@ -120,9 +120,8 @@ class SystemEq:
         number_of_unknowns: int = self.eq_lenght - 1
         number_of_equations: int = len(self.system)
         if number_of_equations > number_of_unknowns:
-            print("Sistema impossibile1")
-        elif number_of_equations < number_of_unknowns:
-            print("Sistema indeterminato1")
+            self.no_solution()
+            return
         else:
             not_zero_coefficients: list[int] = []
             for equation in self.system:
@@ -131,16 +130,33 @@ class SystemEq:
                 )
             # Caso in cui una riga abbia tutti i coefficienti uguali a zero tranne il termine noto
             if not all(not_zero_coefficients):
-                print("Sistema impossibile2")
+                self.no_solution()
+                return
             # Caso in cui una riga abbia almeno due coefficienti diversi da zero
             if any([x > 1 for x in not_zero_coefficients]):
                 print("Sistema indeterminato2")
+                return
             # Caso in cui tutte le righe abbiano un solo coefficiente diverso da zero
+            # for equation in self.system:
+            if all([sum([x != 0 for x in equation.equation.coefficients[:-1]]) == 1]):
+                print("Sistema soluzione unica")
+
+            single_solution: bool = True
             for equation in self.system:
-                if sum([x != 0 for x in equation.equation.coefficients[:-1]]) == 1:
-                    print("Sistema soluzione unica")
+                if sum([x != 0 for x in equation.equation.coefficients[:-1]]) != 1:
+                    single_solution = False
+                    raise ValueError
+            if single_solution == True:
+                self.unique_solution()
     
-    #def unique_solution(self) -> None:
+    def no_solution(self) -> None:
+        print(f"From equation {self.system[-1].equation_number}: 0 = {-1* self.system[-1].equation.coefficients[-1]}")
+        print("Impossible: this system has no solution.")
+
+    def unique_solution(self) -> None:
+        for n in range(self.eq_lenght - 2):
+            print(f"{self.system[n].equation.coefficients[n]} = {-1* self.system[n].equation.coefficients[-1]}")
+
 
     
     #def infinitely_many_solutions(self) -> None:
@@ -148,6 +164,7 @@ class SystemEq:
 
 
 if __name__ == "__main__":
-    s1 = SystemEq.from_csv("csv_files/test2.csv")
+    s1 = SystemEq.from_csv("csv_files/test5.csv")
+    print(s1)
     s1.solve_system()
     print(s1)
