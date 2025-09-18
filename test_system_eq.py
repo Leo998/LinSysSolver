@@ -83,5 +83,23 @@ E3: 1 x1 - 5/3 x2 + 31/5 x3 + 4 = 0
 E2: - 7/2 x1 + 14/5 x2 + 6/5 x3 - 1 = 0
 E5: 1/2 x1 + 1 x2 + 3/2 x3 + 3 = 0
 """
+def test_sort_by_abs():
+    s1 = SystemEq.from_csv("csv_files/system_to_sort.csv")
+    s1.sort_by_abs_coeff(2, 2)
+    assert s1.__str__() == """E1: 1 x1 + 2 x2 + 0 x3 + 4 x4 + 14/5 = 0
+E2: - 7/2 x1 + 14/5 x2 + 6/5 x3 - 1 x4 + 5/2 = 0
+E3: - 3 x1 - 6 x2 - 9 x3 - 12 x4 - 1/2 = 0
+E5: 1/2 x1 + 1 x2 + 3/2 x3 + 3 x4 - 46/5 = 0
+E4: 7/2 x1 - 14/5 x2 - 6/5 x3 + 1 x4 + 11/10 = 0
+"""
 
+def test_zeroes_pivot_column():
+    s1 = SystemEq.from_csv("csv_files/system_to_zeroes.csv")
+    s1.zeroes_pivot_column(1, 1)
+    assert s1.__str__() == """E1: 1 x1 + 0 x2 + 15/7 x3 + 33/7 x4 + 71/70 = 0
+E2: 0 x1 + 14/5 x2 + 6/5 x3 - 1 x4 + 5/2 = 0
+E3: 0 x1 + 0 x2 - 45/7 x3 - 99/7 x4 + 34/7 = 0
+E4: 0 x1 + 0 x2 + 0 x3 + 0 x4 + 18/5 = 0
+E5: 0 x1 + 0 x2 + 15/14 x3 + 47/14 x4 - 1413/140 = 0
+"""
 

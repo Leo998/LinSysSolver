@@ -44,12 +44,6 @@ class SystemEq:
         return "".join(output)
 
     def _del_equation_if_zero(self, eq_number: int) -> None:
-        # i = 0
-        # j = 1
-        # self.system[i] = NumberedEquation(
-        #     equation_number=self.system[i].equation_number,
-        #     equation=self.system[i].equation - self.system[j].equation * Fraction(5, 1),
-        # )
         if self.system[eq_number].equation.is_zero():
             del self.system[eq_number]
 
@@ -114,15 +108,46 @@ class SystemEq:
 
     def solve_system(self) -> None:
         self.minimize_system()
-        self.sort_by_abs_coeff()
-        self.zeroes_pivot_column()
+        for row in range(len(self.system)):
+            for column in range(row, self.eq_lenght - 1):
+                self.sort_by_abs_coeff(row, column)
+                if self.system[row].equation.coefficients[column] == 0:
+                    continue
+                self.zeroes_pivot_column(row, column)
+                break
+        for row in range(len(self.system)):
+            self._del_equation_if_zero(row)
+        number_of_unknowns: int = self.eq_lenght - 1
+        number_of_equations: int = len(self.system)
+        if number_of_equations > number_of_unknowns:
+            print("Sistema impossibile1")
+        elif number_of_equations < number_of_unknowns:
+            print("Sistema indeterminato1")
+        else:
+            not_zero_coefficients: list[int] = []
+            for equation in self.system:
+                not_zero_coefficients.append(
+                    sum([x != 0 for x in equation.equation.coefficients[:-1]])
+                )
+            # Caso in cui una riga abbia tutti i coefficienti uguali a zero tranne il termine noto
+            if not all(not_zero_coefficients):
+                print("Sistema impossibile2")
+            # Caso in cui una riga abbia almeno due coefficienti diversi da zero
+            if any([x > 1 for x in not_zero_coefficients]):
+                print("Sistema indeterminato2")
+            # Caso in cui tutte le righe abbiano un solo coefficiente diverso da zero
+            for equation in self.system:
+                if sum([x != 0 for x in equation.equation.coefficients[:-1]]) == 1:
+                    print("Sistema soluzione unica")
+    
+    #def unique_solution(self) -> None:
+
+    
+    #def infinitely_many_solutions(self) -> None:
+        
 
 
 if __name__ == "__main__":
-    s1 = SystemEq.from_csv("csv_files/system_to_sort.csv")
-    s1.minimize_system()
-    print(s1)
-    # s1.sort_by_abs_coeff()
-    # print(s1)
-    s1.sort_by_abs_coeff(2, 2)
+    s1 = SystemEq.from_csv("csv_files/test2.csv")
+    s1.solve_system()
     print(s1)
