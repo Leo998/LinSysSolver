@@ -7,12 +7,19 @@ class Equation:
     """
     Representation of a linear equation with fractional coefficients.
 
-    This class models equations of the form:
+    This class models homogeneous linear equations of the form:
 
         a_1 x1 + a_2 x2 + ... + a_n xn + c = 0
 
     where each coefficient a_i and constant term c
     is stored as a fraction for exact arithmetic.
+
+    Mathematical Theory
+    -------------------
+    Linear equations represent hyperplanes in n-dimensional space. Two equations
+    are considered equivalent if one can be obtained from the other by multiplication
+    with a non-zero scalar. This class implements exact rational arithmetic for 
+    symbolic manipulation of linear systems.
 
     Equations can be:
     - Added or subtracted term by term.
@@ -24,12 +31,18 @@ class Equation:
     systems of linear equations without introducing floating-point
     approximation errors.
 
+    Parameters
+    ----------
+    *coefficients : Fraction
+        Variable coefficients followed by the constant term.
+        Must provide at least 2 coefficients (1 variable + constant).
+
     Attributes
     ----------
     coefficients : list of Fraction
         List of coefficients representing the equation.
-        The last coefficient is considered the constant term.
-        Must contain at least two coefficients.
+        The last coefficient is the constant term.
+        All coefficients are stored in simplified Fraction form.
 
     Raises
     ------
@@ -71,7 +84,7 @@ class Equation:
 
     def __init__(self, *coefficients: Fraction):
         """
-        Initialize an Equation instance.
+        Initialize an Equation instance with given coefficients.
 
         Parameters
         ----------
@@ -85,6 +98,13 @@ class Equation:
         ValueError
             If fewer than two coefficients are provided.
 
+        Notes
+        -----
+        Coefficients are stored as-is without modification. The Fraction class
+        ensures they are automatically in simplified form.
+        The minimum of 2 coefficients ensures the equation represents at least
+        one variable plus a constant term.
+
         Examples
         --------
         >>> from fraction import Fraction
@@ -94,12 +114,15 @@ class Equation:
         self.coefficients: list[Fraction] = list(coefficients)
         if len(self.coefficients) < 2:
             raise ValueError(
-                "Not enough fraction given to the costructor to be an equation"
+                "Not enough fraction given to the constructor to be an equation"
             )
 
     def __add__(self, other: "Equation") -> "Equation":
         """
         Add two equations term by term.
+
+        Implements vector addition of coefficient vectors, representing
+        the linear combination of two hyperplanes.
 
         Parameters
         ----------
@@ -115,12 +138,20 @@ class Equation:
         ------
         ValueError
             If the two equations have different numbers of coefficients.
+        
+        Examples
+        --------
+        >>> eq1 = Equation(Fraction(2), Fraction(-1), Fraction(3))  
+        >>> eq2 = Equation(Fraction(1), Fraction(2), Fraction(-1)) 
+        >>> eq_sum = eq1 + eq2
+        >>> print(eq_sum)
+        3 x1 + 1 x2 + 2 = 0
         """
         if len(self.coefficients) != len(other.coefficients):
             raise ValueError("Equation instances have different number of coefficients")
         new_coefficients: list[Fraction] = []
-        for coefficient1, coefficient2 in zip(self.coefficients, other.coefficients):
-            new_coefficients.append(coefficient1 + coefficient2)
+        for self_coeff, other_coeff in zip(self.coefficients, other.coefficients):
+            new_coefficients.append(self_coeff + other_coeff)
         return Equation(*new_coefficients)
 
     def __sub__(self, other: "Equation") -> "Equation":
@@ -145,13 +176,16 @@ class Equation:
         if len(self.coefficients) != len(other.coefficients):
             raise ValueError("Equation instances have different number of coefficients")
         new_coefficients: list[Fraction] = []
-        for coefficient1, coefficient2 in zip(self.coefficients, other.coefficients):
-            new_coefficients.append(coefficient1 - coefficient2)
+        for self_coeff, other_coeff in zip(self.coefficients, other.coefficients):
+            new_coefficients.append(self_coeff - other_coeff)
         return Equation(*new_coefficients)
 
     def __mul__(self, other: Fraction | int | float) -> "Equation":
         """
         Multiply the equation by a scalar.
+
+        Implements scalar multiplication of the equation, which geometrically
+        represents the same hyperplane with scaled normal vector.
 
         Parameters
         ----------
@@ -162,6 +196,13 @@ class Equation:
         -------
         Equation
             A new Equation instance with scaled coefficients.
+        
+        Examples
+        --------
+        >>> eq = Equation(Fraction(2), Fraction(-3), Fraction(1))
+        >>> scaled_eq = eq * Fraction(1, 2)
+        >>> print(scaled_eq)
+        1 x1 - 3/2 x2 + 1/2 = 0
         """
         other_as_fraction: Fraction
         if isinstance(other, int) or isinstance(other, float):
@@ -201,6 +242,8 @@ class Equation:
         """
         Divide the equation by a scalar.
 
+        Equivalent to multiplication by the reciprocal of the scalar.
+
         Parameters
         ----------
         other : Fraction, int, or float
@@ -215,6 +258,18 @@ class Equation:
         ------
         ZeroDivisionError
             If `other` evaluates to zero.
+        
+        Notes
+        -----
+        Zero division is handled by the Fraction class, which raises
+        ZeroDivisionError when attempting to divide by zero.
+
+        Examples
+        --------
+        >>> eq = Equation(Fraction(4), Fraction(-2), Fraction(6))
+        >>> divided_eq = eq / 2
+        >>> print(divided_eq)
+        2 x1 - 1 x2 + 3 = 0
         """
         other_as_fraction: Fraction
         if isinstance(other, int) or isinstance(other, float):
@@ -230,10 +285,8 @@ class Equation:
         """
         Check if two equations are equivalent.
 
-        Two equations are considered equivalent if:
-        - They have the same number of coefficients.
-        - Each corresponding coefficient is either zero in both equations
-          or is a scalar multiple of the other by the same factor.
+        Two equations are equivalent if they represent the same hyperplane; 
+        one can be obtained from the other by scalar multiplication.
 
         Parameters
         ----------
@@ -249,7 +302,7 @@ class Equation:
         Raises
         ------
         TypeError
-            If `other` is not an Equation instance.
+            If other is not an Equation instance.
         ValueError
             If the two equations have different numbers of coefficients.
 
@@ -277,18 +330,19 @@ class Equation:
 
         # NOTE: Find the first non-zero pair to define the scaling factor
         # and use it to check consistency across all coefficients.
-        for coefficient1, coefficient2 in zip(self.coefficients, other.coefficients):
-            if coefficient1 != 0 and coefficient2 != 0:
-                factor = coefficient1 / coefficient2
+        for self_coeff, other_coeff in zip(self.coefficients, other.coefficients):
+            if self_coeff != 0 and other_coeff != 0:
+                factor = self_coeff / other_coeff
                 break
-        for coefficient1, coefficient2 in zip(self.coefficients, other.coefficients):
-            if not_equal_or_multiple(coefficient1, coefficient2, factor):
-                return False
+        # Verify all coefficient pairs are consistent with this factor
+        for self_coeff, other_coeff in zip(self.coefficients, other.coefficients):
+            if are_coefficients_inconsistent(self_coeff, other_coeff, factor):   # Returns True if NOT consistent
+                return False   # So equation is not equal
         return True
 
     def __ne__(self, other: object) -> bool:
         """
-        Check if two equations are not equal.
+        Check if two equations are not equivalent.
 
         Parameters
         ----------
@@ -298,7 +352,7 @@ class Equation:
         Returns
         -------
         bool
-            True if any corresponding coefficients differ, False otherwise.
+            True if equations are not equivalent, False if they are equivalent.
         """
         return not self.__eq__(other)
 
@@ -312,25 +366,42 @@ class Equation:
             A string in the form:
             "a_1 x1 ± a_2 x2 ± ... ± a_n xn ± c = 0",
             with proper signs and spacing.
+
+        Notes
+        -----
+        The representation follows mathematical convention:
+        - Positive terms: "+ coefficient xi"
+        - Negative terms: "- |coefficient| xi"  
+        - First term omits leading "+" sign
+        - Constant term appears before "= 0
+
+        Examples
+        --------
+        >>> eq = Equation(Fraction(2), Fraction(-3), Fraction(5))
+        >>> str(eq)
+        '2 x1 - 3 x2 + 5 = 0'
         """
         output: list[str] = []
-        sign: str = ""
+        current_sign: str = ""
+
+        # Process variable coefficients
         for subscript, coefficient in enumerate(self.coefficients[:-1], 1):
             if coefficient.num < 0:
-                sign = "-"
-                coefficient = coefficient * Fraction(-1)
-            output.append(f"{sign} {coefficient} x{subscript} ")
-            sign = "+"
-
-        # HACK: Temporarily flip the sign of the constant term to format it,
-        # then restore the original value.
-        if self.coefficients[-1].num < 0:
-            sign = "-"
-            self.coefficients[-1] = self.coefficients[-1] * Fraction(-1)
-            output.append(f"{sign} {self.coefficients[-1]} = 0")
-            self.coefficients[-1] = self.coefficients[-1] * Fraction(-1)
+                current_sign = "-"
+                coefficient = coefficient * -1
+            output.append(f"{current_sign} {coefficient} x{subscript} ")
+            current_sign = "+"
+        
+        # Process constant term without modifying object state
+        constant_term: Fraction = self.coefficients[-1]
+        if constant_term.num < 0:
+            current_sign = "-"
+            constant_term = constant_term * -1
+            output.append(f"{current_sign} {constant_term} = 0")
         else:
-            output.append(f"{sign} {self.coefficients[-1]} = 0")
+            output.append(f"{current_sign} {constant_term} = 0")
+        
+        # Remove leading space from first term
         output[0] = output[0].lstrip()
         return "".join(output)
 
@@ -342,22 +413,27 @@ class Equation:
         -------
         str
             Same format as __str__(), showing coefficients and variables.
+
+        Notes
+        -----
+        For equations, __repr__ and __str__ provide the same output since
+        the algebraic representation is both human-readable and unambiguous.
         """
         output: list[str] = []
-        sign: str = ""
+        current_sign: str = ""
         for subscript, coefficient in enumerate(self.coefficients[:-1], 1):
             if coefficient.num < 0:
-                sign = "-"
+                current_sign = "-"
                 coefficient = coefficient * Fraction(-1)
-            output.append(f"{sign} {coefficient} x{subscript} ")
-            sign = "+"
-        if self.coefficients[-1].num < 0:
-            sign = "-"
-            self.coefficients[-1] = self.coefficients[-1] * Fraction(-1)
-            output.append(f"{sign} {self.coefficients[-1]} = 0")
-            self.coefficients[-1] = self.coefficients[-1] * Fraction(-1)
+            output.append(f"{current_sign} {coefficient} x{subscript} ")
+            current_sign = "+"
+        constant_term: Fraction = self.coefficients[-1]
+        if constant_term.num < 0:
+            current_sign = "-"
+            constant_term = constant_term * -1
+            output.append(f"{current_sign} {constant_term} = 0")
         else:
-            output.append(f"{sign} {self.coefficients[-1]} = 0")
+            output.append(f"{current_sign} {constant_term} = 0")
         output[0] = output[0].lstrip()
         return "".join(output)
 
@@ -369,16 +445,31 @@ class Equation:
         -------
         bool
             True if all coefficients are zero, False otherwise.
+        
+        Notes
+        -----
+        This is useful for detecting degenerate cases in linear system solving
+        and for identifying equations that provide no information.
+
+        Examples
+        --------
+        >>> eq1 = Equation(Fraction(2), Fraction(-1), Fraction(3))
+        >>> eq1.is_zero()
+        False
+
+        >>> zero_eq = eq1 * 0  
+        >>> zero_eq.is_zero()  
+        True
         """
         return all(c == 0 for c in self.coefficients)
 
 
-def not_equal_or_multiple(c1: Fraction, c2: Fraction, factor: Fraction) -> bool:
+def are_coefficients_inconsistent(c1: Fraction, c2: Fraction, factor: Fraction) -> bool:
     """
-    Check whether two coefficients are consistent with a scaling factor.
+    Check if two coefficients are inconsistent with a given scaling factor.
 
-    This helper determines if two coefficients belong to equations that are
-    equivalent up to a multiplicative constant.
+    This helper function determines whether two coefficients violate the
+    requirement that one equation is a scalar multiple of another.
 
     Parameters
     ----------
@@ -387,33 +478,46 @@ def not_equal_or_multiple(c1: Fraction, c2: Fraction, factor: Fraction) -> bool:
     c2 : Fraction
         The second coefficient.
     factor : Fraction
-        The factor expected to relate c1 and c2.
+        The expected scaling factor relating c1 and c2.
 
     Returns
     -------
     bool
-        True if the coefficients are not consistent (i.e. one is zero and the other is not, or
+        True if the coefficients are inconsistent  (i.e. one is zero and the other is not, or
         they are not multiples of each other by the given factor). False otherwise
         (both zero or related by the factor).
+
+    See Also
+    --------
+    Equation.__eq__ : Uses this function to check coefficient consistency
 
     Examples
     --------
     >>> from fraction import Fraction
-    >>> from equation import not_equal_or_multiple
-    >>> not_equal_or_multiple(Fraction(2), Fraction(4), Fraction(1, 2))
+    >>> # Consistent coefficients (factor = 1/2)
+    >>> are_coefficients_inconsistent(Fraction(2), Fraction(4), Fraction(1, 2))
     False
-    >>> not_equal_or_multiple(Fraction(0), Fraction(5), Fraction(1))
+
+    >>> # Inconsistent: one zero, other non-zero  
+    >>> are_coefficients_inconsistent(Fraction(0), Fraction(5), Fraction(1))
     True
-    >>> not_equal_or_multiple(Fraction(0), Fraction(0), Fraction(1))
+
+    >>> # Consistent: both zero
+    >>> are_coefficients_inconsistent(Fraction(0), Fraction(0), Fraction(2))
     False
+
+    >>> # Inconsistent: wrong ratio
+    >>> are_coefficients_inconsistent(Fraction(3), Fraction(4), Fraction(1, 2))  
+    True
     """
-    # NOTE: This helper returns False if coefficients are consistent
-    # with the scaling factor, True otherwise (slightly inverted logic).
+    # Case 1: One is zero, other is not (inconsistent)
     if (c1 == 0 and c2 != 0) or (c1 != 0 and c2 == 0):
         return True
+    # Case 2: Both are zero (consistent)  
     elif c1 == 0 and c2 == 0:
         return False
+    # Case 3: Both non-zero, check if ratio matches expected factor
     elif c1 / c2 == factor:
-        return False
+        return False  # Consistent
     else:
-        return True
+        return True   # Inconsistent ratio

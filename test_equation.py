@@ -11,10 +11,10 @@ def test_init():
     - Store the coefficients in simplified Fraction form.
     - Raise ValueError if fewer than two coefficients are provided.
     """
-    e1 = Equation(Fraction(2, 4), Fraction(1), Fraction(2.8))
-    assert e1.coefficients[0] == Fraction(1, 2)
-    assert e1.coefficients[1] == Fraction(-1, -1)
-    assert e1.coefficients[2] == Fraction(2.8, 1)
+    test_equation = Equation(Fraction(2, 4), Fraction(1), Fraction(2.8))
+    assert test_equation.coefficients[0] == Fraction(1, 2)
+    assert test_equation.coefficients[1] == Fraction(-1, -1)
+    assert test_equation.coefficients[2] == Fraction(2.8, 1)
     with pytest.raises(ValueError):
         Equation([Fraction(-5, 2)])
     
@@ -28,8 +28,8 @@ def test_add():
     """
     e1 = Equation(Fraction(2, 4), Fraction(1), Fraction(2.8))
     e2 = Equation(Fraction(1, 4), Fraction(-2), Fraction(2.3))
-    e3 = Equation(Fraction(3, 4), Fraction(-1), Fraction(51, 10))
-    assert e1 + e2 == e3
+    expected_sum = Equation(Fraction(3, 4), Fraction(-1), Fraction(51, 10))
+    assert e1 + e2 == expected_sum
         
 def test_sub():
     """
@@ -40,8 +40,8 @@ def test_sub():
     """
     e1 = Equation(Fraction(2, 4), Fraction(1), Fraction(2.8))
     e2 = Equation(Fraction(1, 4), Fraction(-2), Fraction(2.3))
-    e3 = Equation(Fraction(1, 4), Fraction(3), Fraction(1, 2))
-    assert e1 - e2 == e3
+    expected_difference = Equation(Fraction(1, 4), Fraction(3), Fraction(1, 2))
+    assert e1 - e2 == expected_difference
 
 def test_mul():
     """
@@ -50,14 +50,14 @@ def test_mul():
     Then the result should be a new Equation with each coefficient scaled
     by that scalar.
     """
-    e1 = Equation(Fraction(2, 4), Fraction(1), Fraction(2.8))
-    f1 = Fraction(1 , 2)
-    e3 = Equation(Fraction(1, 4), Fraction(0.5), Fraction(7, 5))
-    assert e1 * f1 == e3
-    assert e1 * 0.5 == e3
-    assert e1 * 1 == e1
-    assert Fraction(5, 2) * e3 == Equation(Fraction(5, 8), Fraction(5, 4), Fraction(7, 2))
-    assert 2.5 * e3 == Equation(Fraction(5, 8), Fraction(5, 4), Fraction(7, 2))
+    base_equation = Equation(Fraction(2, 4), Fraction(1), Fraction(2.8))
+    scalar_fraction = Fraction(1 , 2)
+    expected_scaled = Equation(Fraction(1, 4), Fraction(0.5), Fraction(7, 5))
+    assert base_equation * scalar_fraction == expected_scaled
+    assert base_equation * 0.5 == expected_scaled
+    assert base_equation * 1 == base_equation
+    assert Fraction(5, 2) * expected_scaled == Equation(Fraction(5, 8), Fraction(5, 4), Fraction(7, 2))
+    assert 2.5 * expected_scaled == Equation(Fraction(5, 8), Fraction(5, 4), Fraction(7, 2))
 
 def test_truediv():
     """
@@ -66,12 +66,15 @@ def test_truediv():
     Then the result should be a new Equation with each coefficient divided
     by that scalar.
     """
-    e1 = Equation(Fraction(2, 4), Fraction(1), Fraction(2.8))
-    f1 = Fraction(1 , 2)
-    e3 = Equation(Fraction(1), Fraction(2), Fraction(28, 5))
-    assert e1 / f1 == e3
-    assert e1 / 3 == Equation(Fraction(1, 6), Fraction(1, 3), Fraction(14, 15))
-    assert e3 / 1.5 == Equation(Fraction(2, 3), Fraction(4, 3), Fraction(56, 15))
+    dividend_equation = Equation(Fraction(2, 4), Fraction(1), Fraction(2.8))
+    divisor_scalar = Fraction(1 , 2)
+    expected_quotient = Equation(Fraction(1), Fraction(2), Fraction(28, 5))
+    zero_fraction = Fraction(0)
+    assert dividend_equation / divisor_scalar == expected_quotient
+    assert dividend_equation / 3 == Equation(Fraction(1, 6), Fraction(1, 3), Fraction(14, 15))
+    assert expected_quotient / 1.5 == Equation(Fraction(2, 3), Fraction(4, 3), Fraction(56, 15))
+    with pytest.raises(ZeroDivisionError):
+        dividend_equation / zero_fraction
 
 def test_diff_lenght():
     """
@@ -79,12 +82,12 @@ def test_diff_lenght():
     When addition is attempted,
     Then a ValueError should be raised.
     """
-    e1 = Equation(Fraction(2, 4), Fraction(1), Fraction(2.8))
-    e2 = Equation(Fraction(1, 4), Fraction(-2))
+    three_coeff_equation = Equation(Fraction(2, 4), Fraction(1), Fraction(2.8))
+    two_coeff_equation = Equation(Fraction(1, 4), Fraction(-2))
     with pytest.raises(ValueError):
-        e1 + e2
+        three_coeff_equation + two_coeff_equation
     with pytest.raises(ValueError):
-        e1 - e2
+        three_coeff_equation - two_coeff_equation
     
 def test_eq_ne():
     """
@@ -96,16 +99,16 @@ def test_eq_ne():
     - Raise ValueError if the Equations have different number of coefficients.
     - Raise TypeError for unsupported types.
     """
-    e1 = Equation(Fraction(2, 4), Fraction(1), Fraction(2.8))
-    e2 = Equation(Fraction(2, 4), Fraction(-1), Fraction(2.8))
-    e3 = Equation(Fraction(1, 2), Fraction(5, 5), Fraction(5.6, 2))
-    e4 = Equation(Fraction(1, 4), Fraction(-2))
-    assert e1 == e3
-    assert e1 != e2
+    base_equation = Equation(Fraction(2, 4), Fraction(1), Fraction(2.8))
+    different_equation = Equation(Fraction(2, 4), Fraction(-1), Fraction(2.8))
+    equivalent_equation = Equation(Fraction(1, 2), Fraction(5, 5), Fraction(5.6, 2))
+    incompatible_equation = Equation(Fraction(1, 4), Fraction(-2))
+    assert base_equation == equivalent_equation
+    assert base_equation != different_equation
     with pytest.raises(ValueError):
-        e1 == e4
+        base_equation == incompatible_equation
     with pytest.raises(TypeError):
-        e1 == 5
+        base_equation == 5
 
 def test_eq_with_multiple():
     """
@@ -118,15 +121,15 @@ def test_eq_with_multiple():
     - Return True if their coefficients are consistent with
       the same scalar factor (i.e. one equation is a multiple of the other).
     """
-    e01 = Equation(Fraction(0), Fraction(0), Fraction(0))
-    e02 = Equation(Fraction(0), Fraction(0), Fraction(0))
-    assert e01 == e02
-    e1 = Equation(Fraction(0), Fraction(20), Fraction(0))
-    e2 = Equation(Fraction(5.3), Fraction(0), Fraction(-6, 4))
-    assert e1 != e2
-    e3 = Equation(Fraction(0), Fraction(5.5), Fraction(-16, 2))
-    e4 = Equation(Fraction(0), Fraction(7.15), Fraction(-10.4))
-    assert e3 == e4
+    zero_equation_1 = Equation(Fraction(0), Fraction(0), Fraction(0))
+    zero_equation_2 = Equation(Fraction(0), Fraction(0), Fraction(0))
+    assert zero_equation_1 == zero_equation_2
+    partial_zero_equation_1 = Equation(Fraction(0), Fraction(20), Fraction(0))
+    partial_zero_equation_2 = Equation(Fraction(5.3), Fraction(0), Fraction(-6, 4))
+    assert partial_zero_equation_1 != partial_zero_equation_2
+    proportional_equation_1 = Equation(Fraction(0), Fraction(5.5), Fraction(-16, 2))
+    proportional_equation_2 = Equation(Fraction(0), Fraction(7.15), Fraction(-10.4))
+    assert proportional_equation_1 == proportional_equation_2
 
 def test_is_zero():
     """
@@ -136,10 +139,10 @@ def test_is_zero():
     - Return True if all coefficients are zero.
     - Return False otherwise.
     """
-    e1 = Equation(Fraction(2, 4), Fraction(1), Fraction(2.8))
-    e2 = e1 * 0
-    assert not e1.is_zero()
-    assert e2.is_zero()
+    non_zero_equation = Equation(Fraction(2, 4), Fraction(1), Fraction(2.8))
+    zero_equation = non_zero_equation * 0
+    assert not non_zero_equation.is_zero()
+    assert zero_equation.is_zero()
 
 def test_str():
     """
