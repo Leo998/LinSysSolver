@@ -87,7 +87,7 @@ class SystemEq:
             raise TypeError("Constructor requires at least one equation.")
         for n in self.system:
             if self.num_coefficients != len(n.equation.coefficients):
-                raise ValueError("Equations in the system have different leghts")
+                raise ValueError("Equations in the system have different legths")
 
     @classmethod
     def from_csv(cls, filename) -> "SystemEq":
@@ -288,7 +288,8 @@ class SystemEq:
                     if pivot_column == self.num_coefficients - 2:
                         print("There are no more unknowns to go through.")
                         print(self)
-                    # NOTE: Skip pivoting if all coefficients are already zero.
+                    # NOTE: Skip pivoting if all coefficients in this column are zero.
+                    # Otherwise, division by zero would occur in elimination.
                     continue
                 print(self)
                 self._zeroes_pivot_column(current_row, pivot_column)
@@ -364,11 +365,6 @@ class SystemEq:
         Notes
         -----
         Triggered when the system is underdetermined.
-
-        Warnings
-        --------
-        This method mutates the constant term of equations in-place.
-        # FIXME: To avoid side effects, consider working on a copy.
         """
         print(
             f"This system has {self.num_coefficients - 1} unknowns in {len(self.system)} equations, so it has infinitely many solutions."
@@ -400,6 +396,6 @@ class SystemEq:
 
 
 if __name__ == "__main__":
-    s1 = SystemEq.from_csv("csv_files/all_zero.csv")
+    s1 = SystemEq.from_csv("csv_files/test1.csv")
     s1.solve_system()
     #print(s1)
