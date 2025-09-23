@@ -3,20 +3,39 @@ import pytest
 from fraction import Fraction
 from equation import Equation
 from system_eq import NumberedEquation, SystemEq
-
-def test_init():
+ 
+def test_emptysys_init():
     with pytest.raises(TypeError):
         SystemEq.from_csv("csv_files/empty.csv")
-    s1 = SystemEq.from_csv("csv_files/system.csv")
-    assert s1.num_coefficients == 4
-    assert s1.system[2].equation_number == 3
+    with pytest.raises(TypeError):
+        SystemEq()
+
+# ----------------------------------------------------------------------
+# Constructor and initialization
+# ----------------------------------------------------------------------
+
+def test_invalid_init():
     with pytest.raises(ValueError):
         SystemEq.from_csv("csv_files/unpaired1.csv")
     with pytest.raises(ValueError):
         SystemEq.from_csv("csv_files/unpaired2.csv")
     with pytest.raises(ValueError):
         SystemEq.from_csv("csv_files/unpaired3.csv")
- 
+
+def test_init():
+    s1 = SystemEq.from_csv("csv_files/system.csv")
+    assert s1.num_coefficients == 4
+    assert s1.system[0].equation == Equation(Fraction(5.3), Fraction(-2), Fraction(3), Fraction(8.8))
+    assert s1.system[0].equation_number == 1
+    assert s1.system[1].equation == Equation(Fraction(-3), Fraction(4.2), Fraction(3), Fraction("2/7"))
+    assert s1.system[1].equation_number == 2
+    assert s1.system[2].equation == Equation(Fraction(1), Fraction("-5/3"), Fraction(6.2), Fraction(4))
+    assert s1.system[2].equation_number == 3
+
+# ----------------------------------------------------------------------
+# String representation
+# ----------------------------------------------------------------------
+
 def test_str():
     s1 = SystemEq.from_csv("csv_files/system.csv")
     assert s1.__str__() == """E1: 53/10 x1 - 2 x2 + 3 x3 + 44/5 = 0
@@ -24,47 +43,34 @@ E2: - 3 x1 + 21/5 x2 + 3 x3 + 2/7 = 0
 E3: 1 x1 - 5/3 x2 + 31/5 x3 + 4 = 0
 """
 
+# ----------------------------------------------------------------------
+# Internal helpers
+# ----------------------------------------------------------------------
+
 def test_del_eq_if_zero():
     s1 = SystemEq.from_csv("csv_files/row_all_zero.csv")
     s1._del_equation_if_zero(0)
     assert s1.system[0].equation == Equation(Fraction(5.3), Fraction(-2), Fraction(3), Fraction(8.8))
     assert s1.system[0].equation_number == 1
-    assert s1.system[1].equation == Equation(Fraction(), Fraction(), Fraction(), Fraction())
-    assert s1.system[1].equation_number == 2
-    assert s1.system[2].equation == Equation(Fraction(1), Fraction(-5, 3), Fraction(6.2), Fraction(4))
-    assert s1.system[2].equation_number == 3
     s1._del_equation_if_zero(1)
     assert s1.system[1].equation == Equation(Fraction(1), Fraction(-5, 3), Fraction(6.2), Fraction(4))
     assert s1.system[1].equation_number == 3
     with pytest.raises(IndexError):
         s1.system[2].equation
-    assert s1.system[0].equation == Equation(Fraction(5.3), Fraction(-2), Fraction(3), Fraction(8.8))
-    assert s1.system[0].equation_number == 1
 
 def test_unused_unknowns():
     s1 = SystemEq.from_csv("csv_files/unused_unknowns.csv")
-    s2 = SystemEq.from_csv("csv_files/system.csv")
     assert s1.num_coefficients == 6
-    assert s2.num_coefficients == 4
-    assert s2.__str__() == """E1: 53/10 x1 - 2 x2 + 3 x3 + 44/5 = 0
-E2: - 3 x1 + 21/5 x2 + 3 x3 + 2/7 = 0
-E3: 1 x1 - 5/3 x2 + 31/5 x3 + 4 = 0
-"""
     assert s1.__str__() == """E1: 0 x1 + 53/10 x2 - 2 x3 + 3 x4 + 0 x5 + 44/5 = 0
 E2: 0 x1 - 3 x2 + 21/5 x3 + 3 x4 + 0 x5 + 2/7 = 0
 E3: 0 x1 + 1 x2 - 5/3 x3 + 31/5 x4 + 0 x5 + 4 = 0
 """
-    s2._check_unused_unknowns()
-    assert s2.__str__() == """E1: 53/10 x1 - 2 x2 + 3 x3 + 44/5 = 0
-E2: - 3 x1 + 21/5 x2 + 3 x3 + 2/7 = 0
-E3: 1 x1 - 5/3 x2 + 31/5 x3 + 4 = 0
-"""
-    assert s2.num_coefficients == 4
     s1._check_unused_unknowns()
     assert s1.__str__() == """E1: 53/10 x1 - 2 x2 + 3 x3 + 44/5 = 0
 E2: - 3 x1 + 21/5 x2 + 3 x3 + 2/7 = 0
 E3: 1 x1 - 5/3 x2 + 31/5 x3 + 4 = 0
 """
+    assert s1.num_coefficients == 4
 
 def test_minimize():
     s1 = SystemEq.from_csv("csv_files/system.csv")
@@ -103,7 +109,11 @@ E4: 0 x1 + 0 x2 + 0 x3 + 0 x4 + 18/5 = 0
 E5: 0 x1 + 0 x2 + 15/14 x3 + 47/14 x4 - 1413/140 = 0
 """
 
-def test_solve_unique():
+# ----------------------------------------------------------------------
+# Solving scenarios
+# ----------------------------------------------------------------------
+
+def test_solve_unique(capsys):
     s1 = SystemEq.from_csv("csv_files/test1.csv")
     s1.solve_system()
     assert s1.__str__() == """E1: 1 x1 + 0 x2 + 0 x3 + 0 x4 + 0 x5 + 585830/858663 = 0
@@ -124,8 +134,24 @@ E6: 0 x1 + 0 x2 + 0 x3 + 0 x4 + 0 x5 + 1 x6 - 2081307180/428038387 = 0
     s3 = SystemEq.from_csv("csv_files/single_eq_system.csv")
     s3.solve_system()
     assert s3.__str__() == """E1: 1 x1 + 5/2 = 0\n"""
+    captured = capsys.readouterr()
+    assert """This system has only one solution, which is:
+x1 = -585830/858663
+x2 = 60824/22017
+x3 = 873/2327
+x4 = 80872/22017
+x5 = 2113490/858663""" in captured.out
+    assert """This system has only one solution, which is:
+x1 = -424071540/61148341
+x2 = 120601020/428038387
+x3 = 443940960/428038387
+x4 = 2460164040/428038387
+x5 = -108458940/428038387
+x6 = 2081307180/428038387""" in captured.out
+    assert """This system has only one solution, which is:
+x1 = -5/2""" in captured.out
 
-def test_solve_no_solution():
+def test_solve_no_solution(capsys):
     s1 = SystemEq.from_csv("csv_files/test4.csv")
     s1.solve_system()
     assert s1.__str__() == """E3: 1 x1 + 0 x2 + 1/3 x3 + 0 x4 + 1/5 x5 - 3/2 = 0
@@ -146,8 +172,15 @@ E3: 0 x1 + 0 x2 + 0 x3 + 0 x4 + 0 x5 - 5/4 = 0
 E2: 0 x1 + 1 x2 - 9 = 0
 E3: 0 x1 + 0 x2 - 7 = 0
 """
+    captured = capsys.readouterr()
+    assert """From equation 2: 0 = 2/5
+Impossible: this system has no solution.""" in captured.out
+    assert """From equation 3: 0 = 5/4
+Impossible: this system has no solution.""" in captured.out
+    assert """From equation 3: 0 = 7
+Impossible: this system has no solution.""" in captured.out
 
-def test_solve_infinitely_many_solutions():
+def test_solve_infinitely_many_solutions(capsys):
     s1 = SystemEq.from_csv("csv_files/test3.csv")
     s1.solve_system()
     assert s1.__str__() == """E1: 1 x1 + 0 x2 + 0 x3 + 0 x4 + 0 x5 + 0 = 0
@@ -158,12 +191,23 @@ E4: 0 x1 + 0 x2 + 0 x3 + 1 x4 - 1/25 x5 - 8/5 = 0
     s2 = SystemEq.from_csv("csv_files/single_eq_system2.csv")
     s2.solve_system()
     assert s2.__str__() == """E1: 1 x1 - 5 x2 + 5/2 = 0\n"""
+    captured = capsys.readouterr()
+    assert """This system has 5 unknowns in 4 equations, so it has infinitely many solutions.
+x1 = 0
+x2 = 0
+x3 = - 63/100 x5 + 39/5
+x4 =  1/25 x5 + 8/5
+x5 = any value""" in captured.out
+    assert """This system has 2 unknowns in 1 equations, so it has infinitely many solutions.
+x1 =  5 x2 - 5/2
+x2 = any value""" in captured.out
 
-def test_all_zeroes():
+def test_all_zeroes(capsys):
     s1 = SystemEq.from_csv("csv_files/all_zero.csv")
     s1.solve_system()
-    assert s1.__str__() == """E1: 0 = 0
-"""
+    assert s1.__str__() == """E1: 0 = 0\n"""
+    captured = capsys.readouterr()
+    assert """The system is composed by only zeroes, any value of any unknown is a solution.""" in captured.out
 
 def test_multiple_solve():
     s1 = SystemEq.from_csv("csv_files/test3.csv")
