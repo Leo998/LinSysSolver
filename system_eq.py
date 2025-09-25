@@ -81,10 +81,14 @@ class SystemEq:
             NumberedEquation(equation_number=index, equation=equation)
             for index, equation in enumerate(equations_list, 1)
         ]
+        
+        # Check if there is at least one equation
         try:
             self.num_coefficients: int = len(self.system[0].equation.coefficients)
         except IndexError: 
             raise TypeError("Constructor requires at least one equation.")
+        
+        # Check if all equations have the same number of unknowns
         for n in self.system:
             if self.num_coefficients != len(n.equation.coefficients):
                 raise ValueError("Equations in the system have different legths")
@@ -104,13 +108,11 @@ class SystemEq:
         SystemEq
             New system of equations built from the file.
         """
-        with open(filename, newline="") as csv_file:
-            reader = csv.reader(csv_file)
+        with open(filename, newline="") as system_as_csv_file:
+            reader = csv.reader(system_as_csv_file)
             unnumbered_system: list[Equation] = []
             for row in reader:
-                unnumbered_system.append(
-                    Equation(*[Fraction(number) for number in row])
-                )
+                unnumbered_system.append(Equation(*[Fraction(number) for number in row]))
         return SystemEq(*unnumbered_system)
 
     def __str__(self) -> str:
@@ -129,7 +131,7 @@ class SystemEq:
 
     def _del_equation_if_zero(self, eq_number: int) -> None:
         """
-        Delete an equation if it is identically zero.
+        Delete an equation from the system if it is identically zero.
 
         Parameters
         ----------
@@ -148,24 +150,29 @@ class SystemEq:
         """
         unused: bool = True
         unused_variables: list[int] = []
-        for i in range(self.num_coefficients - 1):  # Does not check constant term.
+
+        # Add all unused variables' indexes to the list of unused variables
+        # Does not check constant term.
+        for coeff_index in range(self.num_coefficients - 1): 
             unused = True
-            for n_eq in self.system:
-                if n_eq.equation.coefficients[i] != 0:
+            for numb_equation in self.system:
+                if numb_equation.equation.coefficients[coeff_index] != 0:
                     unused = False
                     break
             if unused == True:
-                unused_variables.append(i)
+                unused_variables.append(coeff_index)            
+
+        # Remove the unused variables from the system and update num_coefficients.
+        # Reversed so the list is not affected by the deletion
+        for i in unused_variables[::-1]:
+            for numb_equation in self.system:
+                del numb_equation.equation.coefficients[i]
+        self.num_coefficients -= len(unused_variables)
+
         if unused_variables != []:
             print(
                 "The system has been checked and there were some unknowns that were not used (always had their coefficient equal to zero), so they were excluded from the system"
             )
-        for i in unused_variables[::-1]:
-            # Reversed so the list is not affected by the deletion
-            for n_eq in self.system:
-                del n_eq.equation.coefficients[i]
-        self.num_coefficients -= len(unused_variables)
-        if unused_variables != []:
             print(self)
 
     def _minimize_system(self) -> None:
@@ -176,22 +183,24 @@ class SystemEq:
         only one representative is kept.
         """
         self._check_unused_unknowns()
+
+        # Add all equivalent equations (except one representative) to the list of redundant equations
         eq_to_be_erased: set[NumberedEquation] = set()
-        for eq1, eq2 in combinations(self.system, 2):
-            if eq1.equation == eq2.equation:
-                eq_to_be_erased.add(eq2)
+        for numb_equation1, numb_equation2 in combinations(self.system, 2):
+            if numb_equation1.equation == numb_equation2.equation:
+                eq_to_be_erased.add(numb_equation2)
+        
+        # Remove all redundant equations.
+        for eq in eq_to_be_erased:
+            self.system.remove(eq)
+        
         if eq_to_be_erased:
             print(
                 "The system has been ckecked and some equations were equivalent to each other: only one of them has been kept"
             )
-        for eq in eq_to_be_erased:
-            self.system.remove(eq)
-        if eq_to_be_erased:
             print(self)
 
-    def _sort_by_abs_coeff(
-        self, from_row: int = 0, column: int = 0, reverse=True
-    ) -> None:
+    def _sort_by_abs_coeff(self, from_row: int = 0, column: int = 0, reverse=True) -> None:
         """
         Sort equations by the absolute value of a coefficient.
 
@@ -210,7 +219,7 @@ class SystemEq:
         """
         system_from_row: list[NumberedEquation] = self.system[from_row:]
         system_from_row.sort(
-            key=lambda num_eq: abs(num_eq.equation.coefficients[column]),
+            key=lambda numb_equation: abs(numb_equation.equation.coefficients[column]),
             reverse=reverse,
         )
         self.system = self.system[:from_row] + system_from_row
@@ -229,17 +238,17 @@ class SystemEq:
         print(
             f"Now we divide the coefficient of x{pivot_column+1} (from E{self.system[pivot_row].equation_number}) by the coefficient of the same unknown from another row/equation, obtaining a factor, and then we subtract E{self.system[pivot_row].equation_number} multiplied by that factor from the other row/equation. We repeat this process for every row/equation."
         )
-        pivot_coefficient: Fraction = self.system[
-            pivot_row
-        ].equation.coefficients[pivot_column]
+        pivot_coefficient: Fraction = self.system[pivot_row].equation.coefficients[pivot_column]
         elimination_factor: Fraction = Fraction()
         updated_system: list[NumberedEquation] = []
+
+        # For each row of the system (except the pivot row) find the elimination factor
         for n_equation in self.system[:pivot_row] + self.system[pivot_row + 1 :]:
             elimination_factor = (
                 n_equation.equation.coefficients[pivot_column]
                 / pivot_coefficient
             )
-            # NOTE: Subtract scaled pivot row to eliminate the pivot column entry.
+            # Subtract scaled pivot row to eliminate the pivot column entry.
             updated_system.append(
                 NumberedEquation(
                     equation_number=n_equation.equation_number,
@@ -250,6 +259,7 @@ class SystemEq:
             print(
                 f"From E{n_equation.equation_number} we subtract {elimination_factor} * E{self.system[pivot_row].equation_number}"
             )
+            
         # HACK: Rebuild the system instead of modifying in place,
         # to avoid overwriting the pivot row during elimination.
         updated_system.insert(pivot_row, self.system[pivot_row])
