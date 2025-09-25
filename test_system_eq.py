@@ -10,6 +10,8 @@ from system_eq import NumberedEquation, SystemEq
 
 def test_emptysys_init() -> None:
     """
+    Tests constructor with no arguments or empty file (so no system is given)
+
     Given an empty csv file or no arguments to SystemEq constructor,
     When attempting to create a SystemEq instance,
     Then it should raise TypeError due to insufficient data.
@@ -21,6 +23,8 @@ def test_emptysys_init() -> None:
         
 def test_invalid_init() -> None:
     """
+    Tests costructor for invalid csv file (different number of coefficients in equations)
+
     Given CSV files containing equations with mismatched coefficient counts,
     When attempting to create a SystemEq instance,
     Then it should raise ValueError for inconsistent equation dimensions.
@@ -34,6 +38,8 @@ def test_invalid_init() -> None:
 
 def test_init() -> None:
     """
+    Tests constructor with valid csv file given
+
     Given a valid CSV file with consistent equation dimensions,
     When creating a SystemEq instance,
     Then it should:
@@ -56,6 +62,8 @@ def test_init() -> None:
 
 def test_str() -> None:
     """
+    Tests str method
+
     Given a SystemEq instance,
     When converting to string representation,
     Then it should:
@@ -76,6 +84,8 @@ E3: 1 x1 - 5/3 x2 + 31/5 x3 + 4 = 0
 
 def test_del_eq_if_zero() -> None:
     """
+    Test del_eq_if_zero method
+
     Given a system containing zero equations,
     When calling _del_equation_if_zero on those equations,
     Then it should:
@@ -96,6 +106,8 @@ def test_del_eq_if_zero() -> None:
 
 def test_unused_unknowns() -> None:
     """
+    Test unused_unknowns method
+
     Given a system with variables that have zero coefficients in all equations,
     When calling _check_unused_unknowns,
     Then it should:
@@ -119,6 +131,8 @@ E3: 1 x1 - 5/3 x2 + 31/5 x3 + 4 = 0
 
 def test_minimize() -> None:
     """
+    Test minimize_system method
+
     Given systems with redundant or equivalent equations,
     When calling _minimize_system,
     Then it should:
@@ -150,6 +164,8 @@ E5: 1/2 x1 + 1 x2 + 3/2 x3 + 3 = 0
 
 def test_sort_by_abs() -> None:
     """
+    Test sort_by_abs_coeff method
+
     Given a system of equations,
     When calling _sort_by_abs_coeff with specific row and column parameters,
     Then it should:
@@ -169,6 +185,8 @@ E4: 7/2 x1 - 14/5 x2 - 6/5 x3 + 1 x4 + 11/10 = 0
 
 def test_zeroes_pivot_column() -> None:
     """
+    Test zeroes_pivot_column method
+
     Given a system with a designated pivot row and column,
     When calling _zeroes_pivot_column,
     Then it should:
@@ -191,6 +209,8 @@ E5: 0 x1 + 0 x2 + 15/14 x3 + 47/14 x4 - 1413/140 = 0
 
 def test_solve_unique(capsys: pytest.CaptureFixture[str]) -> None:
     """
+    Tests that solve method works for systems with a unique solution
+
     Given systems with unique solutions,
     When calling solve_system,
     Then it should:
@@ -240,6 +260,8 @@ x1 = -5/2""" in captured.out
 
 def test_solve_no_solution(capsys: pytest.CaptureFixture[str]) -> None:
     """
+    Tests that solve method works for systems with no solution
+
     Given inconsistent systems of equations,
     When calling solve_system,
     Then it should:
@@ -280,6 +302,8 @@ Impossible: this system has no solution.""" in captured.out
 
 def test_solve_infinitely_many_solutions(capsys: pytest.CaptureFixture[str]) -> None:
     """
+    Tests that solve method works for undetermined systems with infintely many solutions
+
     Given underdetermined systems of equations,
     When calling solve_system,
     Then it should:
@@ -313,6 +337,8 @@ x2 = any value""" in captured.out
 
 def test_all_zeroes(capsys: pytest.CaptureFixture[str]) -> None:
     """
+    Tests that solve method works for a systems composed by only zeroes
+
     Given a system where all equations are identically zero,
     When calling solve_system,
     Then it should:
@@ -329,6 +355,8 @@ def test_all_zeroes(capsys: pytest.CaptureFixture[str]) -> None:
 
 def test_multiple_solve() -> None:
     """
+    Tests that using solve method more than once give always the same correct solution
+
     Given systems that have already been solved,
     When calling solve_system multiple times,
     Then it should:

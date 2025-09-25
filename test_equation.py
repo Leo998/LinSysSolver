@@ -5,6 +5,8 @@ from equation import Equation
 
 def test_init() -> None:
     """
+    Tests constructor (also with not enough arguments)
+
     Given a list of Fraction coefficients,
     When an Equation is initialized,
     Then it should:
@@ -21,6 +23,8 @@ def test_init() -> None:
 
 def test_add() -> None:
     """
+    Tests add method
+
     Given two Equations with the same number of coefficients,
     When they are added,
     Then the result should be a new Equation whose coefficients
@@ -33,6 +37,8 @@ def test_add() -> None:
         
 def test_sub() -> None:
     """
+    Tests sub method
+
     Given two Equations with the same number of coefficients,
     When one is subtracted from the other,
     Then the result should be a new Equation whose coefficients
@@ -45,6 +51,8 @@ def test_sub() -> None:
 
 def test_mul() -> None:
     """
+    Tests mul and rmul methods
+
     Given an Equation and a scalar (Fraction, int, or float),
     When multiplied,
     Then the result should be a new Equation with each coefficient scaled
@@ -61,6 +69,8 @@ def test_mul() -> None:
 
 def test_truediv() -> None:
     """
+    Tests truediv method (also with division by zero)
+
     Given an Equation and a scalar (Fraction, int, or float),
     When divided,
     Then the result should be a new Equation with each coefficient divided
@@ -78,6 +88,8 @@ def test_truediv() -> None:
 
 def test_diff_lenght() -> None:
     """
+    Tests operations between equation of different lenght
+
     Given two Equations with different numbers of coefficients,
     When addition is attempted,
     Then a ValueError should be raised.
@@ -88,9 +100,13 @@ def test_diff_lenght() -> None:
         three_coeff_equation + two_coeff_equation
     with pytest.raises(ValueError):
         three_coeff_equation - two_coeff_equation
+    with pytest.raises(ValueError):
+        three_coeff_equation == two_coeff_equation
     
 def test_eq_ne() -> None:
     """
+    Tests eq and ne methods (also with unsupported types)
+
     Given two Equations,
     When equality or inequality is checked,
     Then it should:
@@ -105,13 +121,13 @@ def test_eq_ne() -> None:
     incompatible_equation = Equation(Fraction(1, 4), Fraction(-2))
     assert base_equation == equivalent_equation
     assert base_equation != different_equation
-    with pytest.raises(ValueError):
-        base_equation == incompatible_equation
     with pytest.raises(TypeError):
         base_equation == 5
 
 def test_eq_with_multiple() -> None:
     """
+    Tests eq and ne methods for equivalent (not equal) equations
+
     Given two Equations,
     When equality is checked,
     Then it should:
@@ -133,6 +149,8 @@ def test_eq_with_multiple() -> None:
 
 def test_is_zero() -> None:
     """
+    Tests is_zero method
+
     Given an Equation,
     When is_zero() is called,
     Then it should:
@@ -146,6 +164,8 @@ def test_is_zero() -> None:
 
 def test_str() -> None:
     """
+    Tests str method
+
     Given an Equation,
     When __str__() is called,
     Then it should:
@@ -160,6 +180,8 @@ def test_str() -> None:
 
 def test_repr() -> None:
     """
+    Tests repr method
+
     Given an Equation,
     When __repr__() is called,
     Then it should return the same formatted string as __str__().

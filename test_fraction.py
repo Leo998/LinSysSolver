@@ -5,6 +5,8 @@ from fraction import Fraction
 
 def test_int_init() -> None:
     """
+    Tests constructor with no argument or int arguments
+
     Given a Fraction initialized with integers or no arguments,
     When the object is created,
     Then it should:
@@ -30,6 +32,8 @@ def test_int_init() -> None:
 
 def test_float_init() -> None:
     """
+    Tests constructor with float arguments
+
     Given a Fraction initialized with float values,
     When the object is created,
     Then it should:
@@ -53,6 +57,8 @@ def test_float_init() -> None:
 
 def test_string_init() -> None:
     """
+    Tests constructor with string arguments
+
     Given a Fraction initialized with a string,
     When the object is created,
     Then it should:
@@ -83,6 +89,8 @@ def test_string_init() -> None:
 
 def test_simplify() -> None:
     """
+    Tests simplify method
+
     Given a Fraction with a numerator and denominator not in lowest terms,
     When simplify() is called,
     Then it should:
@@ -98,6 +106,8 @@ def test_simplify() -> None:
 
 def test_add() -> None:
     """
+    Tests add and radd methods
+
     Given two Fractions, or a Fraction and an int or float,
     When they are added,
     Then the result should:
@@ -116,6 +126,8 @@ def test_add() -> None:
 
 def test_sub() -> None:
     """
+    Tests sub and rsub methods
+
     Given two Fractions, or a Fraction and an int or float,
     When one is subtracted from the other,
     Then the result should:
@@ -134,6 +146,8 @@ def test_sub() -> None:
 
 def test_mul() -> None:
     """
+    Tests mul and rmul methods
+
     Given two Fractions, or a Fraction and an int or float,
     When they are multiplied,
     Then the result should:
@@ -153,6 +167,8 @@ def test_mul() -> None:
 
 def test_truediv() -> None:
     """
+    Tests truediv and rtruediv methods
+
     Given two Fractions, or a Fraction and an int or float,
     When one is divided by the other,
     Then the result should:
@@ -172,6 +188,8 @@ def test_truediv() -> None:
 
 def test_divisionByZero() -> None:
     """
+    Tests division by zero
+
     Given two Fractions where the divisor has a zero numerator,
     When a division is attempted,
     Then a ZeroDivisionError should be raised.
@@ -185,6 +203,8 @@ def test_divisionByZero() -> None:
     
 def test_abs() -> None:
     """
+    Tests abs method
+
     Given a Fraction,
     When abs() is called,
     Then it should:
@@ -202,6 +222,8 @@ def test_abs() -> None:
 
 def test_eq_ne() -> None:
     """
+    Tests eq and ne methods
+
     Given Fractions and integers or floats,
     When equality and inequality comparisons are made,
     Then they should:
@@ -222,6 +244,8 @@ def test_eq_ne() -> None:
 
 def test_lt_eq() -> None:
     """
+    Tests lt and le methods
+
     Given two Fractions or a Fraction compared with a numeric type,
     When the less-than operator (<) is used,
     Then it should:
@@ -234,12 +258,15 @@ def test_lt_eq() -> None:
     assert f2 < f1
     assert 0 < f1
     assert -0.6 < f2
+    assert 0.5 <= f1
 
     with pytest.raises(TypeError):
         f1 < "ciao"
 
 def test_gt_eq() -> None:
     """
+    Tests gt and ge methods
+
     Given two Fractions or a Fraction compared with a numeric type,
     When the greater-than operator (>) is used,
     Then it should:
@@ -252,12 +279,15 @@ def test_gt_eq() -> None:
     assert f1 > f2
     assert f1 > -1
     assert -0.1 > f2
+    assert 0.5 >= f1
 
     with pytest.raises(TypeError):
         f1 > "ciao"
 
 def test_str() -> None:
     """
+    Tests str method
+
     Given a Fraction,
     When __str__() is called,
     Then it should:
@@ -277,6 +307,8 @@ def test_str() -> None:
 
 def test_repr() -> None:
     """
+    Tests repr method
+
     Given a Fraction,
     When __repr__() is called,
     Then it should:
