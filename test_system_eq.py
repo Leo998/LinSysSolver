@@ -326,12 +326,14 @@ E4: 0 x1 + 0 x2 + 0 x3 + 1 x4 - 1/25 x5 - 8/5 = 0
     # Verify parameterized solution output
     captured = capsys.readouterr()
     assert """This system has 5 unknowns in 4 equations, so it has infinitely many solutions.
+
 x1 = 0
 x2 = 0
 x3 = - 63/100 x5 + 39/5
 x4 =  1/25 x5 + 8/5
 x5 = any value""" in captured.out
     assert """This system has 2 unknowns in 1 equations, so it has infinitely many solutions.
+
 x1 =  5 x2 - 5/2
 x2 = any value""" in captured.out
 
