@@ -113,9 +113,7 @@ class Equation:
         """
         self.coefficients: list[Fraction] = list(coefficients)
         if len(self.coefficients) < 2:
-            raise ValueError(
-                "Not enough fraction given to the constructor to be an equation"
-            )
+            raise ValueError("Not enough coefficients given to be an equation")
 
     def __add__(self, other: "Equation") -> "Equation":
         """
@@ -149,10 +147,10 @@ class Equation:
         """
         if len(self.coefficients) != len(other.coefficients):
             raise ValueError("Equation instances have different number of coefficients")
-        new_coefficients: list[Fraction] = []
+        added_coefficients: list[Fraction] = []
         for self_coeff, other_coeff in zip(self.coefficients, other.coefficients):
-            new_coefficients.append(self_coeff + other_coeff)
-        return Equation(*new_coefficients)
+            added_coefficients.append(self_coeff + other_coeff)
+        return Equation(*added_coefficients)
 
     def __sub__(self, other: "Equation") -> "Equation":
         """
@@ -175,10 +173,10 @@ class Equation:
         """
         if len(self.coefficients) != len(other.coefficients):
             raise ValueError("Equation instances have different number of coefficients")
-        new_coefficients: list[Fraction] = []
+        subtracted_coefficients: list[Fraction] = []
         for self_coeff, other_coeff in zip(self.coefficients, other.coefficients):
-            new_coefficients.append(self_coeff - other_coeff)
-        return Equation(*new_coefficients)
+            subtracted_coefficients.append(self_coeff - other_coeff)
+        return Equation(*subtracted_coefficients)
 
     def __mul__(self, other: Fraction | int | float) -> "Equation":
         """
@@ -209,10 +207,10 @@ class Equation:
             other_as_fraction = Fraction(other)
         else:
             other_as_fraction = other
-        new_coefficients: list[Fraction] = []
+        multiplied_coefficients: list[Fraction] = []
         for coefficient in self.coefficients:
-            new_coefficients.append(coefficient * other_as_fraction)
-        return Equation(*new_coefficients)
+            multiplied_coefficients.append(coefficient * other_as_fraction)
+        return Equation(*multiplied_coefficients)
 
     def __rmul__(self, other: Fraction | int | float) -> "Equation":
         """
@@ -233,10 +231,10 @@ class Equation:
             other_as_fraction = Fraction(other)
         else:
             other_as_fraction = other
-        new_coefficients: list[Fraction] = []
+        multiplied_coefficients: list[Fraction] = []
         for coefficient in self.coefficients:
-            new_coefficients.append(coefficient * other_as_fraction)
-        return Equation(*new_coefficients)
+            multiplied_coefficients.append(coefficient * other_as_fraction)
+        return Equation(*multiplied_coefficients)
 
     def __truediv__(self, other: Fraction | int | float) -> "Equation":
         """
@@ -276,10 +274,10 @@ class Equation:
             other_as_fraction = Fraction(other)
         else:
             other_as_fraction = other
-        new_coefficients: list[Fraction] = []
+        divided_coefficients: list[Fraction] = []
         for coefficient in self.coefficients:
-            new_coefficients.append(coefficient / other_as_fraction)
-        return Equation(*new_coefficients)
+            divided_coefficients.append(coefficient / other_as_fraction)
+        return Equation(*divided_coefficients)
 
     def __eq__(self, other: object) -> bool:
         """
@@ -334,9 +332,11 @@ class Equation:
             if self_coeff != 0 and other_coeff != 0:
                 factor = self_coeff / other_coeff
                 break
+        
         # Verify all coefficient pairs are consistent with this factor
         for self_coeff, other_coeff in zip(self.coefficients, other.coefficients):
-            if are_coefficients_inconsistent(self_coeff, other_coeff, factor):   # Returns True if NOT consistent
+            # Returns True if NOT consistent
+            if are_coefficients_inconsistent(self_coeff, other_coeff, factor):
                 return False   # So equation is not equal
         return True
 
@@ -384,7 +384,7 @@ class Equation:
         output: list[str] = []
         current_sign: str = ""
 
-        # Process variable coefficients
+        # Process variables' coefficients without modifying object state
         for subscript, coefficient in enumerate(self.coefficients[:-1], 1):
             if coefficient.num < 0:
                 current_sign = "-"
@@ -421,12 +421,16 @@ class Equation:
         """
         output: list[str] = []
         current_sign: str = ""
+
+        # Process variables' coefficients without modifying object state
         for subscript, coefficient in enumerate(self.coefficients[:-1], 1):
             if coefficient.num < 0:
                 current_sign = "-"
-                coefficient = coefficient * Fraction(-1)
+                coefficient = coefficient * -1
             output.append(f"{current_sign} {coefficient} x{subscript} ")
             current_sign = "+"
+        
+        # Process constant term without modifying object state
         constant_term: Fraction = self.coefficients[-1]
         if constant_term.num < 0:
             current_sign = "-"
@@ -434,6 +438,8 @@ class Equation:
             output.append(f"{current_sign} {constant_term} = 0")
         else:
             output.append(f"{current_sign} {constant_term} = 0")
+        
+        # Remove leading space from first term
         output[0] = output[0].lstrip()
         return "".join(output)
 

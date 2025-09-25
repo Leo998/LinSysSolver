@@ -4,7 +4,7 @@ import math
 
 class Fraction:
     """
-    Representation of a mathematical fraction with exact arithmetic..
+    Representation of a mathematical fraction with exact arithmetic.
 
     This class supports arithmetic operations, comparisons, and string
     parsing for fractions. It ensures exact arithmetic by avoiding floating-
@@ -23,10 +23,10 @@ class Fraction:
         Can be:
         - int: integer numerator
         - float: will be converted to an exact fraction
-        - str: either an integer string or of the form "a/b"
+        - str: either an integer or float string or of the form "a/b"
     denominator : int or float, optional
         The denominator of the fraction (Defaults to 1).
-        Cannot be zero.
+        Cannot be zero
     
     Attributes
     ----------
@@ -72,14 +72,14 @@ class Fraction:
         Parameters
         ----------
         numerator : int, float, or str, optional
-            The numerator of the fraction (Defaults to 0).
+            The numerator of the fraction (Defaults to 0)
             Can be:
-            - int: integer numerator.
-            - float: will be converted into an exact fraction.
-            - str: either an integer string (e.g. "5") or a string in the form "a/b".
+            - int: integer numerator
+            - float: will be converted into an exact fraction
+            - str: either an integer or float string or a string in the form "a/b"
         denominator : int or float, optional
-            The denominator of the fraction (Defaults to 1).
-            Cannot be zero.
+            The denominator of the fraction (Defaults to 1)
+            Cannot be zero
 
         Raises
         ------
@@ -107,10 +107,11 @@ class Fraction:
         """
         if denominator == 0:
             raise ZeroDivisionError("Error raised by Fraction class' constructor")
+        
         if isinstance(numerator, str):
-            f = Fraction.from_str(numerator)
-            self.num: int = f.num
-            self.den: int = f.den
+            fraction_from_string = Fraction.from_str(numerator)
+            self.num: int = fraction_from_string.num
+            self.den: int = fraction_from_string.den
         else:
             self.num = int(numerator)
             self.den = int(denominator)
@@ -122,7 +123,7 @@ class Fraction:
                 self.den = int(denominator)
         self.simplify()
 
-    def simplify(self):
+    def simplify(self) -> None:
         """
         Reduce the fraction to its lowest terms using the Euclidean algorithm.
 
@@ -151,6 +152,8 @@ class Fraction:
         greatest_common_divisor = math.gcd(self.num, self.den)
         self.num //= greatest_common_divisor
         self.den //= greatest_common_divisor
+        
+        # Moves any negative sign to the numerator
         if self.den < 0:
             self.num *= -1
             self.den *= -1
@@ -160,7 +163,7 @@ class Fraction:
         """
         Create a Fraction instance from a string.
 
-        This factory method parses various string formats to create fractions,
+        This method parses various string formats to create fractions,
         handling integer strings, float strings, and explicit fraction notation.
 
         Parameters
@@ -197,6 +200,7 @@ class Fraction:
         numerator: int
         denominator: int
         try:
+            # Convert the string into a Fraction if the string is in the form "a/b" 
             numerator_as_str: str
             denominator_as_str: str
             numerator_as_str, denominator_as_str = fraction_as_string.split("/")
@@ -204,13 +208,15 @@ class Fraction:
             denominator = int(denominator_as_str)
         except ValueError:
             numerator_float = float(fraction_as_string)
-            numerator = int(numerator_float)
+            numerator_int = int(numerator_float)
             denominator = 1
             # Convert float to exact fraction using decimal expansion
-            while numerator != numerator_float:
+            # It also works if it an int by doing nothing
+            while numerator_int != numerator_float:
                 numerator_float *= 10
                 denominator *= 10
-                numerator = int(numerator_float)
+                numerator_int = int(numerator_float)
+            numerator = numerator_int
         return Fraction(numerator, denominator)
 
     def __add__(self, other: Union["Fraction", int, float]) -> "Fraction":
@@ -341,8 +347,12 @@ class Fraction:
         """
         if isinstance(other, int) or isinstance(other, float):
             other = Fraction(other)
+        
+        # This makes sure that in case of "Fraction * Equation" the method called
+        # is __rmul__ from equation class, and not this one.
         if not isinstance(other, Fraction):
             return NotImplemented
+        
         num = self.num * other.num
         den = self.den * other.den
         return Fraction(num, den)
@@ -493,9 +503,7 @@ class Fraction:
         """
         if isinstance(other, Fraction):
             return self.num * other.den == self.den * other.num
-        elif isinstance(other, int):
-            return self.num == self.den * other
-        elif isinstance(other, float):
+        elif isinstance(other, float) or isinstance(other, int):
             other_as_fraction = Fraction(other)
             return self.num * other_as_fraction.den == self.den * other_as_fraction.num
         raise TypeError("Comparison between Fraction and invalid type")
@@ -555,7 +563,7 @@ class Fraction:
         elif isinstance(other, Fraction):
             other_as_fraction = other
         else:
-            raise (TypeError)
+            raise TypeError("Comparison between Fraction and invalid type")
         return (self.num * other_as_fraction.den) < (other_as_fraction.num * self.den)
 
     def __gt__(self, other: object | int | float) -> bool:
@@ -597,7 +605,7 @@ class Fraction:
         elif isinstance(other, Fraction):
             other_as_fraction = other
         else:
-            raise (TypeError)
+            raise TypeError("Comparison between Fraction and invalid type")
         return (self.num * other_as_fraction.den) > (other_as_fraction.num * self.den)
     
     def __le__(self, other: object | int | float) -> bool:
@@ -642,7 +650,7 @@ class Fraction:
         """
         return self.__gt__(other) or self.__eq__(other)
 
-    def __str__(self):
+    def __str__(self) -> str:
         """
         Return a human-readable string representation of the fraction.
 
@@ -663,7 +671,7 @@ class Fraction:
             return f"{self.num}"
         return f"{self.num}/{self.den}"
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """
         Return the formal string representation of the fraction.
 
