@@ -8,7 +8,7 @@ from system_eq import NumberedEquation, SystemEq
 # Constructor and initialization
 # ----------------------------------------------------------------------
 
-def test_emptysys_init():
+def test_emptysys_init() -> None:
     """
     Given an empty csv file or no arguments to SystemEq constructor,
     When attempting to create a SystemEq instance,
@@ -19,7 +19,7 @@ def test_emptysys_init():
     with pytest.raises(TypeError):
         SystemEq()
         
-def test_invalid_init():
+def test_invalid_init() -> None:
     """
     Given CSV files containing equations with mismatched coefficient counts,
     When attempting to create a SystemEq instance,
@@ -32,7 +32,7 @@ def test_invalid_init():
     with pytest.raises(ValueError):
         SystemEq.from_csv("csv_files/unpaired3.csv")
 
-def test_init():
+def test_init() -> None:
     """
     Given a valid CSV file with consistent equation dimensions,
     When creating a SystemEq instance,
@@ -54,7 +54,7 @@ def test_init():
 # String representation
 # ----------------------------------------------------------------------
 
-def test_str():
+def test_str() -> None:
     """
     Given a SystemEq instance,
     When converting to string representation,
@@ -74,7 +74,7 @@ E3: 1 x1 - 5/3 x2 + 31/5 x3 + 4 = 0
 # Internal helpers
 # ----------------------------------------------------------------------
 
-def test_del_eq_if_zero():
+def test_del_eq_if_zero() -> None:
     """
     Given a system containing zero equations,
     When calling _del_equation_if_zero on those equations,
@@ -94,7 +94,7 @@ def test_del_eq_if_zero():
     with pytest.raises(IndexError):
         system_with_zeros.system[2].equation
 
-def test_unused_unknowns():
+def test_unused_unknowns() -> None:
     """
     Given a system with variables that have zero coefficients in all equations,
     When calling _check_unused_unknowns,
@@ -117,7 +117,7 @@ E3: 1 x1 - 5/3 x2 + 31/5 x3 + 4 = 0
 """
     assert system_with_unused.num_coefficients == 4
 
-def test_minimize():
+def test_minimize() -> None:
     """
     Given systems with redundant or equivalent equations,
     When calling _minimize_system,
@@ -148,7 +148,7 @@ E2: - 7/2 x1 + 14/5 x2 + 6/5 x3 - 1 = 0
 E5: 1/2 x1 + 1 x2 + 3/2 x3 + 3 = 0
 """
 
-def test_sort_by_abs():
+def test_sort_by_abs() -> None:
     """
     Given a system of equations,
     When calling _sort_by_abs_coeff with specific row and column parameters,
@@ -167,7 +167,7 @@ E5: 1/2 x1 + 1 x2 + 3/2 x3 + 3 x4 - 46/5 = 0
 E4: 7/2 x1 - 14/5 x2 - 6/5 x3 + 1 x4 + 11/10 = 0
 """
 
-def test_zeroes_pivot_column():
+def test_zeroes_pivot_column() -> None:
     """
     Given a system with a designated pivot row and column,
     When calling _zeroes_pivot_column,
@@ -189,7 +189,7 @@ E5: 0 x1 + 0 x2 + 15/14 x3 + 47/14 x4 - 1413/140 = 0
 # Solving scenarios
 # ----------------------------------------------------------------------
 
-def test_solve_unique(capsys):
+def test_solve_unique(capsys: pytest.CaptureFixture[str]) -> None:
     """
     Given systems with unique solutions,
     When calling solve_system,
@@ -238,7 +238,7 @@ x6 = 2081307180/428038387""" in captured.out
     assert """This system has only one solution, which is:
 x1 = -5/2""" in captured.out
 
-def test_solve_no_solution(capsys):
+def test_solve_no_solution(capsys: pytest.CaptureFixture[str]) -> None:
     """
     Given inconsistent systems of equations,
     When calling solve_system,
@@ -278,7 +278,7 @@ Impossible: this system has no solution.""" in captured.out
     assert """From equation 3: 0 = 7
 Impossible: this system has no solution.""" in captured.out
 
-def test_solve_infinitely_many_solutions(capsys):
+def test_solve_infinitely_many_solutions(capsys: pytest.CaptureFixture[str]) -> None:
     """
     Given underdetermined systems of equations,
     When calling solve_system,
@@ -311,7 +311,7 @@ x5 = any value""" in captured.out
 x1 =  5 x2 - 5/2
 x2 = any value""" in captured.out
 
-def test_all_zeroes(capsys):
+def test_all_zeroes(capsys: pytest.CaptureFixture[str]) -> None:
     """
     Given a system where all equations are identically zero,
     When calling solve_system,
@@ -327,7 +327,7 @@ def test_all_zeroes(capsys):
     captured = capsys.readouterr()
     assert """The system is composed by only zeroes, any value of any unknown is a solution.""" in captured.out
 
-def test_multiple_solve():
+def test_multiple_solve() -> None:
     """
     Given systems that have already been solved,
     When calling solve_system multiple times,

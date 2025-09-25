@@ -3,7 +3,7 @@ import pytest
 from fraction import Fraction
 from equation import Equation
 
-def test_init():
+def test_init() -> None:
     """
     Given a list of Fraction coefficients,
     When an Equation is initialized,
@@ -16,10 +16,10 @@ def test_init():
     assert test_equation.coefficients[1] == Fraction(-1, -1)
     assert test_equation.coefficients[2] == Fraction(2.8, 1)
     with pytest.raises(ValueError):
-        Equation([Fraction(-5, 2)])
+        Equation(Fraction(-5, 2))
     
 
-def test_add():
+def test_add() -> None:
     """
     Given two Equations with the same number of coefficients,
     When they are added,
@@ -31,7 +31,7 @@ def test_add():
     expected_sum = Equation(Fraction(3, 4), Fraction(-1), Fraction(51, 10))
     assert e1 + e2 == expected_sum
         
-def test_sub():
+def test_sub() -> None:
     """
     Given two Equations with the same number of coefficients,
     When one is subtracted from the other,
@@ -43,7 +43,7 @@ def test_sub():
     expected_difference = Equation(Fraction(1, 4), Fraction(3), Fraction(1, 2))
     assert e1 - e2 == expected_difference
 
-def test_mul():
+def test_mul() -> None:
     """
     Given an Equation and a scalar (Fraction, int, or float),
     When multiplied,
@@ -59,7 +59,7 @@ def test_mul():
     assert Fraction(5, 2) * expected_scaled == Equation(Fraction(5, 8), Fraction(5, 4), Fraction(7, 2))
     assert 2.5 * expected_scaled == Equation(Fraction(5, 8), Fraction(5, 4), Fraction(7, 2))
 
-def test_truediv():
+def test_truediv() -> None:
     """
     Given an Equation and a scalar (Fraction, int, or float),
     When divided,
@@ -76,7 +76,7 @@ def test_truediv():
     with pytest.raises(ZeroDivisionError):
         dividend_equation / zero_fraction
 
-def test_diff_lenght():
+def test_diff_lenght() -> None:
     """
     Given two Equations with different numbers of coefficients,
     When addition is attempted,
@@ -89,7 +89,7 @@ def test_diff_lenght():
     with pytest.raises(ValueError):
         three_coeff_equation - two_coeff_equation
     
-def test_eq_ne():
+def test_eq_ne() -> None:
     """
     Given two Equations,
     When equality or inequality is checked,
@@ -110,7 +110,7 @@ def test_eq_ne():
     with pytest.raises(TypeError):
         base_equation == 5
 
-def test_eq_with_multiple():
+def test_eq_with_multiple() -> None:
     """
     Given two Equations,
     When equality is checked,
@@ -131,7 +131,7 @@ def test_eq_with_multiple():
     proportional_equation_2 = Equation(Fraction(0), Fraction(7.15), Fraction(-10.4))
     assert proportional_equation_1 == proportional_equation_2
 
-def test_is_zero():
+def test_is_zero() -> None:
     """
     Given an Equation,
     When is_zero() is called,
@@ -144,7 +144,7 @@ def test_is_zero():
     assert not non_zero_equation.is_zero()
     assert zero_equation.is_zero()
 
-def test_str():
+def test_str() -> None:
     """
     Given an Equation,
     When __str__() is called,
@@ -158,7 +158,7 @@ def test_str():
     assert e1.__str__() == "1/2 x1 + 1 x2 - 27/10 = 0"
     assert e2.__str__() == "- 2/5 x1 - 1 x2 + 14/5 = 0"
 
-def test_repr():
+def test_repr() -> None:
     """
     Given an Equation,
     When __repr__() is called,

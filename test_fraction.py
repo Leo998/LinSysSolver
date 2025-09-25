@@ -3,7 +3,7 @@ import pytest
 from fraction import Fraction
 
 
-def test_int_init():
+def test_int_init() -> None:
     """
     Given a Fraction initialized with integers or no arguments,
     When the object is created,
@@ -28,7 +28,7 @@ def test_int_init():
         _ = Fraction(1, 0)
 
 
-def test_float_init():
+def test_float_init() -> None:
     """
     Given a Fraction initialized with float values,
     When the object is created,
@@ -51,7 +51,7 @@ def test_float_init():
     assert int_float_mix == 4
 
 
-def test_string_init():
+def test_string_init() -> None:
     """
     Given a Fraction initialized with a string,
     When the object is created,
@@ -81,7 +81,7 @@ def test_string_init():
 
 
 
-def test_simplify():
+def test_simplify() -> None:
     """
     Given a Fraction with a numerator and denominator not in lowest terms,
     When simplify() is called,
@@ -96,7 +96,7 @@ def test_simplify():
     assert test_fraction.num == -3 and test_fraction.den == 2
 
 
-def test_add():
+def test_add() -> None:
     """
     Given two Fractions, or a Fraction and an int or float,
     When they are added,
@@ -114,7 +114,7 @@ def test_add():
     assert 1.5 + negative_fraction == Fraction() # Tests commutativity via __radd__
 
 
-def test_sub():
+def test_sub() -> None:
     """
     Given two Fractions, or a Fraction and an int or float,
     When one is subtracted from the other,
@@ -132,7 +132,7 @@ def test_sub():
     assert 2.5 - subtrahend_fraction == 4
 
 
-def test_mul():
+def test_mul() -> None:
     """
     Given two Fractions, or a Fraction and an int or float,
     When they are multiplied,
@@ -151,7 +151,7 @@ def test_mul():
     assert 1.5 * f1 == Fraction(15, 8)
 
 
-def test_truediv():
+def test_truediv() -> None:
     """
     Given two Fractions, or a Fraction and an int or float,
     When one is divided by the other,
@@ -170,7 +170,7 @@ def test_truediv():
     assert dividend_fraction / divisor_fraction == Fraction(-10, 12)
 
 
-def test_divisionByZero():
+def test_divisionByZero() -> None:
     """
     Given two Fractions where the divisor has a zero numerator,
     When a division is attempted,
@@ -183,7 +183,7 @@ def test_divisionByZero():
     with pytest.raises(ZeroDivisionError):
         3.2 / zero_fraction
     
-def test_abs():
+def test_abs() -> None:
     """
     Given a Fraction,
     When abs() is called,
@@ -200,7 +200,7 @@ def test_abs():
     assert abs(negative_fraction) == Fraction(1, 3)
     assert abs(product_fraction) == Fraction(1, 6)
 
-def test_eq_ne():
+def test_eq_ne() -> None:
     """
     Given Fractions and integers or floats,
     When equality and inequality comparisons are made,
@@ -220,7 +220,7 @@ def test_eq_ne():
     with pytest.raises(TypeError):
         Fraction(2, 4) == "0.5"   # String comparison invalid
 
-def test_lt_eq():
+def test_lt_eq() -> None:
     """
     Given two Fractions or a Fraction compared with a numeric type,
     When the less-than operator (<) is used,
@@ -238,7 +238,7 @@ def test_lt_eq():
     with pytest.raises(TypeError):
         f1 < "ciao"
 
-def test_gt_eq():
+def test_gt_eq() -> None:
     """
     Given two Fractions or a Fraction compared with a numeric type,
     When the greater-than operator (>) is used,
@@ -256,7 +256,7 @@ def test_gt_eq():
     with pytest.raises(TypeError):
         f1 > "ciao"
 
-def test_str():
+def test_str() -> None:
     """
     Given a Fraction,
     When __str__() is called,
@@ -275,7 +275,7 @@ def test_str():
     f2 = Fraction(5, -1)  # Becomes -5/1 after simplification
     assert f2.__str__() == "-5"
 
-def test_repr():
+def test_repr() -> None:
     """
     Given a Fraction,
     When __repr__() is called,
