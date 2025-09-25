@@ -20,7 +20,7 @@ class NumberedEquation(NamedTuple):
     equation_number: int
     equation: Equation
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return self.equation_number
 
 
@@ -94,7 +94,7 @@ class SystemEq:
                 raise ValueError("Equations in the system have different legths")
 
     @classmethod
-    def from_csv(cls, filename) -> "SystemEq":
+    def from_csv(cls, filename: str) -> "SystemEq":
         """
         Build a system of equations from a CSV file.
 
@@ -200,7 +200,7 @@ class SystemEq:
             )
             print(self)
 
-    def _sort_by_abs_coeff(self, from_row: int = 0, column: int = 0, reverse=True) -> None:
+    def _sort_by_abs_coeff(self, from_row: int = 0, column: int = 0, reverse: bool=True) -> None:
         """
         Sort equations by the absolute value of a coefficient.
 
@@ -282,9 +282,13 @@ class SystemEq:
         print("This is the system we'll start from:")
         print(self)
         self._minimize_system()
+
+        # Check if system is composed by only zeroes
         if self.num_coefficients == 1 and self.system[0].equation.coefficients[0] == 0:
             print("The system is composed by only zeroes, any value of any unknown is a solution.")
             return
+        
+        # Algorithm that reduces the system to row-echelon form
         for current_row in range(len(self.system)):
             for pivot_column in range(current_row, self.num_coefficients - 1):
                 print(
@@ -305,6 +309,7 @@ class SystemEq:
                 self._zeroes_pivot_column(current_row, pivot_column)
                 print(self)
                 print(f"We then divide E{self.system[current_row].equation_number} by its own coefficient of x{pivot_column+1} in order to make it equal to 1 for convenience.")
+                
                 # Normalize pivot row.
                 self.system[current_row] = NumberedEquation(
                     equation_number=self.system[current_row].equation_number,
@@ -313,11 +318,15 @@ class SystemEq:
                 )
                 print(self)
                 break
+        
+        # Deletes any null equation (all coefficients are zero)
+        # Reversed so the list is not affected by the deletion
         for current_row in range(len(self.system) - 1, -1, -1):
             self._del_equation_if_zero(current_row)
         print("This is now our final system (with any zero equations deleted).")
         print(self)
-        # NOTE: Classify the solution type without full back substitution.
+        
+        # Classify the solution type 
         number_of_unknowns: int = self.num_coefficients - 1
         number_of_equations: int = len(self.system)
         if number_of_equations > number_of_unknowns:
@@ -326,22 +335,22 @@ class SystemEq:
         else:
             not_zero_coefficients: list[int] = []
             for equation in self.system:
-                not_zero_coefficients.append(
-                    sum([x != 0 for x in equation.equation.coefficients[:-1]])
-                )
+                not_zero_coefficients.append(sum([x != 0 for x in equation.equation.coefficients[:-1]]))
+            
             # At least on row has all coefficients equal to zero except the constant term
             if not all(not_zero_coefficients):
                 self._no_solution()
                 return
+            
             # One row has two or more coefficients that are not equal to zero
             if any([x > 1 for x in not_zero_coefficients]):
                 self._infinitely_many_solutions()
                 return
+            
             # Every row has exactly one non zero coefficient
             self._unique_solution()
 
     def _no_solution(self) -> None:
-        
         """
         Print that the system has no solution.
 
@@ -349,13 +358,10 @@ class SystemEq:
         -----
         Triggered when a row reduces to 0 = c, with c non-zero.
         """
-        print(
-            f"From equation {self.system[-1].equation_number}: 0 = {-1* self.system[-1].equation.coefficients[-1]}"
-        )
+        print(f"From equation {self.system[-1].equation_number}: 0 = {-1* self.system[-1].equation.coefficients[-1]}")
         print("Impossible: this system has no solution.")
 
     def _unique_solution(self) -> None:
-        
         """
         Print the unique solution of the system.
 
@@ -368,7 +374,6 @@ class SystemEq:
             print(f"x{n+1} = {-1* self.system[n].equation.coefficients[-1]}")
 
     def _infinitely_many_solutions(self) -> None:
-        
         """
         Print that the system has infinitely many solutions.
 
@@ -376,11 +381,11 @@ class SystemEq:
         -----
         Triggered when the system is underdetermined.
         """
-        print(
-            f"This system has {self.num_coefficients - 1} unknowns in {len(self.system)} equations, so it has infinitely many solutions."
-        )
+        print(f"This system has {self.num_coefficients - 1} unknowns in {len(self.system)} equations, so it has infinitely many solutions.")
+        
+        # Print the unknowns and their parameters (if present)
         for numb_equation in self.system:
-            output: list = []
+            output: list[str] = []
             current_sign: str = ""
             for i, coeff in enumerate(numb_equation.equation.coefficients[:-1]):
                 if not output and coeff != 0:
@@ -392,6 +397,8 @@ class SystemEq:
                         coeff = coeff * -1
                     output.append(f" {current_sign} {coeff} x{i+1} ")
                     current_sign = "+"
+            
+            # Print the constant term (if not 0)
             constant_term: Fraction = numb_equation.equation.coefficients[-1]
             if constant_term != 0 or output[-1].endswith("="):
                 constant_term = constant_term * -1
@@ -399,7 +406,10 @@ class SystemEq:
                     current_sign = "-"
                 constant_term = constant_term * -1
                 output.append(f"{current_sign} {abs(constant_term)}")
+            
             print("".join(output))
+        
+        # Print variables that can take any value
         for n in range(len(self.system), self.num_coefficients - 1):
             print(f"x{n+1} = any value")
 
