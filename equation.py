@@ -1,5 +1,3 @@
-import math
-
 from fraction import Fraction
 
 
