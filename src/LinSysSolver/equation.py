@@ -1,4 +1,4 @@
-from fraction import Fraction
+from LinSysSolver.fraction import Fraction
 
 
 class Equation:

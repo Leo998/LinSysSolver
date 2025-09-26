@@ -1,7 +1,7 @@
 import pytest
 
-from fraction import Fraction
-from equation import Equation
+from LinSysSolver.fraction import Fraction
+from LinSysSolver.equation import Equation
 
 def test_init() -> None:
     """

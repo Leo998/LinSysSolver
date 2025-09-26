@@ -1,6 +1,6 @@
 import pytest
 
-from fraction import Fraction
+from LinSysSolver.fraction import Fraction
 
 
 def test_int_init() -> None:

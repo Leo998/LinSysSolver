@@ -1,8 +1,8 @@
 import csv
 
 from typing import NamedTuple
-from fraction import Fraction
-from equation import Equation
+from LinSysSolver.fraction import Fraction
+from LinSysSolver.equation import Equation
 from itertools import combinations
 
 NORMAL_OUTPUT: str = "normal output"
@@ -413,7 +413,7 @@ class SystemEq:
 
 
 
-if __name__ == "__main__":
-    s1 = SystemEq.from_csv("csv_files/all_zero.csv")
-    s1.solve_system()
+# if __name__ == "__main__":
+#     s1 = SystemEq.from_csv("csv_files/all_zero.csv")
+#     s1.solve_system()
     #print(s1)

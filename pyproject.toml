@@ -1,0 +1,24 @@
+[project]
+name = "LinSysSolver"
+version = "0.1.0"
+description = "A simple solver for linear systems of equations using Gaussian elimination."
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+authors = [{ name = "Leonardo Ossino", email = "leonardo.ossino@studio.unibo.it" }]
+
+[project.urls]
+"Homepage" = "https://github.com/pypa/sampleproject"
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "mypy",
+    "pytest-cov",
+]
+
+[project.scripts]
+LinSysSolver = "LinSysSolver.main:main"
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
