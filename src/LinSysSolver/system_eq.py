@@ -72,8 +72,8 @@ class SystemEq:
 
     Examples
     --------
-    >>> from fraction import Fraction
-    >>> from equation import Equation
+    >>> from LinSysSolver.fraction import Fraction
+    >>> from LinSysSolver.equation import Equation
     >>> e1 = Equation(Fraction(2), Fraction(1), Fraction(-1))
     >>> e2 = Equation(Fraction(1), Fraction(-1), Fraction(3))
     >>> system = SystemEq(e1, e2)

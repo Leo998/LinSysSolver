@@ -1,5 +1,5 @@
 test:
-	pytest --cov-report term-missing tests/*.py
+	pytest --cov-report term-missing tests/*.py src/LinSysSolver/*.py
 type:
 	mypy --strict src/LinSysSolver/*.py tests
 change:

@@ -8,4 +8,5 @@ def main():
     print(args.filename)
 
 
-main()
+if __name__ == "__main__":
+    main()

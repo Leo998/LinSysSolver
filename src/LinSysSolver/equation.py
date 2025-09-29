@@ -55,7 +55,7 @@ class Equation:
     --------
     Create an equation with two variables:
 
-        >>> from fraction import Fraction
+        >>> from LinSysSolver.fraction import Fraction
         >>> eq1 = Equation(Fraction(2), Fraction(-3), Fraction(5))
         >>> print(eq1)
         2 x1 - 3 x2 + 5 = 0
@@ -105,7 +105,7 @@ class Equation:
 
         Examples
         --------
-        >>> from fraction import Fraction
+        >>> from LinSysSolver.fraction import Fraction
         >>> Equation(Fraction(2), Fraction(-3), Fraction(5))
         2 x1 - 3 x2 + 5 = 0
         """
@@ -309,8 +309,8 @@ class Equation:
 
         Examples
         --------
-        >>> from fraction import Fraction
-        >>> from equation import Equation
+        >>> from LinSysSolver.fraction import Fraction
+        >>> from LinSysSolver.equation import Equation
         >>> eq1 = Equation(Fraction(2), Fraction(-4), Fraction(6))
         >>> eq2 = Equation(Fraction(1), Fraction(-2), Fraction(3))
         >>> eq1 == eq2
@@ -497,7 +497,7 @@ def are_coefficients_inconsistent(c1: Fraction, c2: Fraction, factor: Fraction) 
 
     Examples
     --------
-    >>> from fraction import Fraction
+    >>> from LinSysSolver.fraction import Fraction
     >>> # Consistent coefficients (factor = 1/2)
     >>> are_coefficients_inconsistent(Fraction(2), Fraction(4), Fraction(1, 2))
     False
