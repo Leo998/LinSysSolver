@@ -9,7 +9,7 @@ Designed for educational purposes, it provides step-by-step explanations of the 
 - **Exact arithmetic**: Uses rational number representation (fractions) to avoid floating-point errors
 - **Educational output**: Explains each step of the Gaussian elimination process
 - **Flexible input**: Reads systems from CSV files
-- **Partial pivoting**: Implements numerical stability through coefficient sorting- Solve systems of linear equations from CSV input
+- **Partial pivoting**: Implements numerical stability through coefficient sorting
 
 ---
 
