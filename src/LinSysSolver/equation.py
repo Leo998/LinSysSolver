@@ -110,6 +110,8 @@ class Equation:
         2 x1 - 3 x2 + 5 = 0
         """
         self.coefficients: list[Fraction] = list(coefficients)
+        if len(self.coefficients) < 1:
+            raise ValueError("Empty row left in the system")
         if len(self.coefficients) < 2:
             raise ValueError("Not enough coefficients given to be an equation")
 
