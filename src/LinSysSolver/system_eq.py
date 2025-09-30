@@ -93,7 +93,7 @@ class SystemEq:
         for n in self.system:
             if self.num_coefficients != len(n.equation.coefficients):
                 raise ValueError("Equations in the system have different legths")
-        self.process_and_solutions: list[tuple[str, str]] = []
+        self.process_and_solutions: list[tuple[bool, str]] = []
 
     @classmethod
     def from_csv(cls, filename: str) -> "SystemEq":
@@ -299,7 +299,7 @@ class SystemEq:
                 self.process_and_solutions.append((silent, self.__str__() + "\n"))
                 self._zeroes_pivot_column(current_row, pivot_column, silent)
                 self.process_and_solutions.append((silent, self.__str__() + "\n"))
-                self.process_and_solutions.append((silent, f"We then divide E{self.system[current_row].equation_number} by its own coefficient of x{pivot_column+1} in order to make it equal to 1 for convenience.\n"))
+                self.process_and_solutions.append((silent, f"We then divide E{self.system[current_row].equation_number} by its own coefficient of x{pivot_column+1} ({self.system[current_row].equation.coefficients[pivot_column]}) in order to make it equal to 1 for convenience.\n"))
                 
                 # Normalize pivot row.
                 self.system[current_row] = NumberedEquation(
@@ -390,7 +390,7 @@ class SystemEq:
                     if coeff < 0:
                         current_sign = "-"
                         coeff = coeff * -1
-                    output.append(f" {current_sign} {coeff} x{i+1} ")
+                    output.append(f" {current_sign} {coeff} x{i+1}")
                     current_sign = "+"
             
             # Print the constant term (if not 0)
@@ -400,17 +400,9 @@ class SystemEq:
                 if constant_term < 0:
                     current_sign = "-"
                 constant_term = constant_term * -1
-                output.append(f"{current_sign} {abs(constant_term)}")
-            
+                output.append(f" {current_sign} {abs(constant_term)}")
             self.process_and_solutions.append((False, "".join(output)))
         
         # Print variables that can take any value
         for n in range(len(self.system), self.num_coefficients - 1):
             self.process_and_solutions.append((False, f"\nx{n+1} = any value"))
-
-
-
-# if __name__ == "__main__":
-#     s1 = SystemEq.from_csv("csv_files/all_zero.csv")
-#     s1.solve_system()
-    #print(s1)
