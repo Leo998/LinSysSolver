@@ -10,7 +10,7 @@ class NumberedEquation(NamedTuple):
     """
     Simple container for an Equation with a unique identifier.
 
-    Parameters
+    Attributes
     ----------
     equation_number : int
         Identifier of the equation (e.g. its index in the system).
@@ -45,6 +45,7 @@ class SystemEq:
     num_coefficients : int
         Number of coefficients (including constant term) per equation.
     process_and_solutions: list of tuple
+        Container for output flag and output strings
 
     Raises
     ------
@@ -279,8 +280,8 @@ class SystemEq:
 
         # Check if system is composed by only zeroes
         if self.num_coefficients == 1 and self.system[0].equation.coefficients[0] == 0:
-            self.process_and_solutions.append((silent, "The system is composed by only zeroes, any value of any unknown is a solution.\n"))
-            print("".join([x[1] for x in self.process_and_solutions]))
+            self.process_and_solutions.append((False, "The system is composed by only zeroes, any value of any unknown is a solution.\n"))
+            print("".join([x[1] for x in self.process_and_solutions if not x[0]]))
             return
         
         # Algorithm that reduces the system to row-echelon form
@@ -322,7 +323,7 @@ class SystemEq:
         number_of_equations: int = len(self.system)
         if number_of_equations > number_of_unknowns:
             self._no_solution()
-            print("".join([x[1] for x in self.process_and_solutions]))
+            print("".join([x[1] for x in self.process_and_solutions if not x[0]]))
             return
         else:
             not_zero_coefficients: list[int] = []
@@ -332,13 +333,13 @@ class SystemEq:
             # At least on row has all coefficients equal to zero except the constant term
             if not all(not_zero_coefficients):
                 self._no_solution()
-                print("".join([x[1] for x in self.process_and_solutions]))
+                print("".join([x[1] for x in self.process_and_solutions if not x[0]]))
                 return
             
             # One row has two or more coefficients that are not equal to zero
             if any([x > 1 for x in not_zero_coefficients]):
                 self._infinitely_many_solutions()
-                print("".join([x[1] for x in self.process_and_solutions]))
+                print("".join([x[1] for x in self.process_and_solutions if not x[0]]))
                 return
             
             # Every row has exactly one non zero coefficient
